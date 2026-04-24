@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root { --primary: #1a73e8; --bg: #f8f9fa; --text: #202124; --accent: #d93025; --shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); padding: 15px; margin: 0; padding-bottom: 50px; }
+    .app-container { max-width: 500px; margin: auto; }
+    
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h2 { margin: 0; color: var(--primary); font-size: 26px; }
+    
+    /* Alerte Live */
+    .after-alert { background: #fff3e0; border: 2px dashed #ff9800; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; display: none; animation: pulseAlert 2s infinite; }
+    @keyframes pulseAlert { 0% {box-shadow: 0 0 0 0 rgba(255,152,0,0.4);} 70% {box-shadow: 0 0 0 10px rgba(255,152,0,0);} 100% {box-shadow: 0 0 0 0 rgba(255,152,0,0);} }
+
+    /* Recherche */
+    .dropdown-container { position: relative; margin-bottom: 20px; }
+    input#teamSearch { width: 100%; padding: 16px; border: 2px solid #dadce0; border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; background: white; }
+    .team-list { position: absolute; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #dadce0; border-radius: 0 0 12px 12px; z-index: 100; display: none; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+    .team-item { padding: 14px; cursor: pointer; border-bottom: 1px solid #f1f3f4; }
+    .team-item:hover { background-color: #f1f3f4; }
+
+    /* Info Global Tournoi */
+    .next-match-info { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-size: 15px; line-height: 1.4; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+    /* Cartes Match */
+    .card { background: white; border-radius: 16px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border-left: 6px solid var(--primary); }
+    .time-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; }
+    .time { color: var(--primary); font-size: 15px; }
+    .venue { color: #5f6368; font-size: 14px; }
+
+    /* Design "Battle" ⚔️ */
+    .match-display { text-align: center; padding: 12px; background: #fdfdfd; border-radius: 12px; border: 1px solid #f1f1f1; }
+    .team-id-label { font-size: 10px; color: #9aa0a6; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
+    .team-name-label { font-size: 16px; font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; }
+    .swords-icon { font-size: 20px; padding: 0 10px; color: #dadce0; }
+
+    /* Match en direct */
+    .card.live-match { border-left: 6px solid var(--accent); background: #fffcfc; }
+    .live-time { color: var(--accent); font-weight: bold; }
+    .live-dot { height: 10px; width: 10px; background-color: var(--accent); border-radius: 50%; display: inline-block; margin-right: 6px; animation: blink 1.5s infinite; }
+    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+
+    /* Boîte de statut (Résumé équipe) */
+    .status-box { background: #e8f0fe; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; border: 1px solid #1a73e8; }
+    .status-live { background: #fff1f0; border: 1px solid #fce8e6; border-left: 4px solid var(--accent); }
+    
+    button.main-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; margin-bottom: 10px; cursor: pointer; font-weight: bold; font-size: 15px; background:#606770; color:white; }
+    .hidden { display: none !important; }
+
+    /* Animation de chargement */
+    .loader-container { text-align: center; padding: 40px 20px; }
+    .spinner { border: 4px solid #dadce0; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loader-text { color: #5f6368; font-weight: bold; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header"><h2>🏆 Polysport 2026</h2></div>
+
+  <div id="afterAlert" class="after-alert">
+    <div style="font-weight: bold; color: #e65100; margin-bottom: 5px;">📣 INFOS LIVE</div>
+    <div id="afterContent"></div>
+  </div>
+
+  <div id="loadingIndicator" class="loader-container">
+    <div class="spinner"></div>
+    <div class="loader-text">Chargement des équipes et des matchs...</div>
+  </div>
+
+  <div class="dropdown-container hidden" id="searchContainer">
+    <input type="text" id="teamSearch" placeholder="🔍 Chercher votre équipe..." autocomplete="off">
+    <div id="teamList" class="team-list"></div>
+  </div>
+
+  <div id="nextMatchInfo" class="next-match-info hidden"></div>
+
+  <div id="results"></div>
+
+  <hr style="border: 0; border-top: 1px solid #dadce0; margin: 25px 0;">
+
+  <button class="main-btn" onclick="toggleSection('generalContainer', this, '📅 Programme de la journée')">📅 Programme de la journée</button>
+  <div id="generalContainer" class="card hidden"><div id="timelineContent"></div></div>
+
+  <button class="main-btn" onclick="toggleSection('planContainer', this, '🗺️ Plan des terrains')">🗺️ Plan des terrains</button>
+  <div id="planContainer" class="hidden" style="text-align:center;">
+    <img src="https://i.postimg.cc/yd1f4sh0/polysport26-plan.png" style="width:100%; border-radius:12px;" alt="Plan">
+  </div>
+</div>
+
+<script>
+  let APP_DATA = { matchData: [], teams: [], timeline: [], tournamentDate: "" };
+
+  window.onload = function() {
+    google.script.run.withSuccessHandler(data => {
+      APP_DATA = data;
+      document.getElementById('loadingIndicator').style.display = 'none';
+      document.getElementById('searchContainer').classList.remove('hidden');
+      if(data.afterMessage) {
+        document.getElementById('afterAlert').style.display = 'block';
+        document.getElementById('afterContent').innerText = data.afterMessage;
+      }
+      renderTimeline(data.timeline);
+      checkGlobalStart();
+    }).getInitialAppData();
+  };
+
+  /** PARSER : Décompose la cellule "ID1 vs ID2\nNomA VS NomB" **/
+  function parseMatchCell(cellText) {
+    try {
+      const lines = cellText.split('\n');
+      if (lines.length < 2) return { idA: "", idB: "", nameA: cellText, nameB: "" };
+      const ids = lines[0].split(/ vs /i);
+      const names = lines[1].split(/ VS /);
+      return {
+        idA: ids[0]?.trim() || "",
+        idB: ids[1]?.trim() || "",
+        nameA: names[0]?.trim() || "",
+        nameB: names[1]?.trim() || ""
+      };
+    } catch(e) { return { idA: "", idB: "", nameA: cellText, nameB: "" }; }
+  }
+
+  const searchInput = document.getElementById('teamSearch');
+  const listDiv = document.getElementById('teamList');
+
+  searchInput.addEventListener('focus', function() {
+    renderTeamList(APP_DATA.teams.filter(t => t.toLowerCase().includes(this.value.toLowerCase())));
+  });
+
+  searchInput.addEventListener('input', function() {
+    const val = this.value.toLowerCase();
+    renderTeamList(APP_DATA.teams.filter(t => t.toLowerCase().includes(val)));
+    if(val === "") { document.getElementById('results').innerHTML = ''; checkGlobalStart(); }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!document.querySelector('.dropdown-container').contains(e.target)) listDiv.style.display = 'none';
+  });
+
+  function renderTeamList(teams) {
+    listDiv.innerHTML = '';
+    listDiv.style.display = teams.length ? 'block' : 'none';
+    teams.forEach(t => {
+      const item = document.createElement('div');
+      item.className = 'team-item';
+      item.innerText = t;
+      item.onclick = () => { searchInput.value = t; listDiv.style.display = 'none'; filterMatches(t); };
+      listDiv.appendChild(item);
+    });
+  }
+
+  setInterval(() => {
+    const s = document.getElementById('teamSearch').value;
+    if(s && APP_DATA.teams.includes(s)) filterMatches(s);
+  }, 60000);
+
+  function isMatchLive(timeStr, nextTimeStr) {
+    if (!timeStr) return false;
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const matchT1 = timeStr.toString().match(/(\d{1,2})[h:](\d{2})/i);
+    if (!matchT1) return false;
+    const startMin = parseInt(matchT1[1]) * 60 + parseInt(matchT1[2]);
+    let endMin = startMin + 20; 
+    if (nextTimeStr) {
+      const matchT2 = nextTimeStr.toString().match(/(\d{1,2})[h:](\d{2})/i);
+      if (matchT2) endMin = parseInt(matchT2[1]) * 60 + parseInt(matchT2[2]);
+    }
+    return (currentMinutes >= startMin && currentMinutes < endMin);
+  }
+
+  function filterMatches(teamName) {
+    document.getElementById('nextMatchInfo').classList.add('hidden');
+    const results = document.getElementById('results');
+    results.innerHTML = '';
+    const headers = APP_DATA.matchData[0];
+    
+    let nextMatch = null;
+    let matchEnCours = null;
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    let matchesHtml = "";
+
+    for(let i=1; i < APP_DATA.matchData.length; i++) {
+      for(let j=1; j < APP_DATA.matchData[i].length; j++) {
+        const cell = APP_DATA.matchData[i][j];
+        if(cell.toLowerCase().includes(teamName.toLowerCase())) {
+          const timeStr = APP_DATA.matchData[i][0];
+          const nextTimeStr = (i + 1 < APP_DATA.matchData.length) ? APP_DATA.matchData[i+1][0] : null;
+          const isLive = isMatchLive(timeStr, nextTimeStr);
+          const match = parseMatchCell(cell);
+          
+          const timeMatch = timeStr.match(/(\d{1,2})[h:](\d{2})/i);
+          const startMin = timeMatch ? parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]) : 0;
+
+          if (isLive) matchEnCours = { time: timeStr, venue: headers[j] };
+          if (!isLive && startMin > currentMinutes && (!nextMatch || startMin < nextMatch.start)) {
+            nextMatch = { start: startMin, time: timeStr, diff: startMin - currentMinutes, venue: headers[j] };
+          }
+
+          matchesHtml += `
+            <div class="card ${isLive ? 'live-match' : ''}">
+              <div class="time-header">
+                <span class="${isLive ? 'live-time' : 'time'}">
+                  ${isLive ? '<span class="live-dot"></span>' : '⏰ '} ${timeStr}
+                </span>
+                <span class="venue">📍 ${headers[j]}</span>
+              </div>
+              <div class="match-display">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div style="flex:1">
+                    <div class="team-id-label">${match.idA}</div>
+                    <div class="team-name-label">${match.nameA}</div>
+                  </div>
+                  <div class="swords-icon">⚔️</div>
+                  <div style="flex:1">
+                    <div class="team-id-label">${match.idB}</div>
+                    <div class="team-name-label">${match.nameB}</div>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        }
+      }
+    }
+
+    let summaryHtml = "";
+    if (matchEnCours) {
+      summaryHtml = `<div class="status-box status-live">
+          <div style="font-size: 16px; margin-bottom: 6px;"><b>Match en cours</b> sur le terrain ${matchEnCours.venue} !</div>`;
+      if (nextMatch) summaryHtml += `<div style="font-size: 13px; color: #666; font-weight: normal;"><i>Prochain match à ${nextMatch.time} (${nextMatch.venue})</i></div>`;
+      summaryHtml += `</div>`;
+    } else if (nextMatch) {
+      summaryHtml = `<div class="status-box">⏳ Prochain match dans <b>${nextMatch.diff} min</b><br><small>(${nextMatch.time} - ${nextMatch.venue})</small></div>`;
+    } else if (matchesHtml !== "") {
+      summaryHtml = `<div class="status-box" style="background:#e6f4ea; border-color:#137333; color:#137333;">🏁 <b>Tous vos matchs sont terminés !</b></div>`;
+    }
+    results.innerHTML = summaryHtml + matchesHtml;
+  }
+
+  function checkGlobalStart() {
+    const infoDiv = document.getElementById('nextMatchInfo');
+    const now = new Date();
+    let d = new Date(APP_DATA.tournamentDate);
+    if(isNaN(d)) d = new Date();
+    let startTimeStr = (APP_DATA.timeline && APP_DATA.timeline.length > 0) ? APP_DATA.timeline[0].time : "17h30";
+    let timeParts = startTimeStr.split(/[:h]/i);
+    d.setHours(parseInt(timeParts[0]) || 17, parseInt(timeParts[1]) || 30, 0, 0);
+    if(d - now >= 24 * 3600000) {
+      infoDiv.innerHTML = `😴 <b>Patience !</b><br>Le tournoi débute le <b>${d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} à ${startTimeStr}</b> !`;
+      infoDiv.style.background = "#e8f0fe"; infoDiv.style.color = "#1a73e8";
+    } else {
+      infoDiv.innerHTML = `🔥 <b>Le tournoi approche à grands pas !</b><br>Cherchez votre équipe pour voir l'heure de votre match.`;
+      infoDiv.style.background = "#fef7e0"; infoDiv.style.color = "#b06000";
+    }
+    infoDiv.classList.remove('hidden');
+  }
+
+  function renderTimeline(timeline) {
+    let html = '<h3 style="margin:0 0 15px 0; color:var(--primary);">Planning Général</h3>';
+    timeline.forEach(item => {
+      html += `<p style="margin-bottom:12px;"><b>${item.time}</b> - ${item.label}<br><span style="font-size:13px; color:#555;">${item.details || ''}</span></p>`;
+    });
+    document.getElementById('timelineContent').innerHTML = html;
+  }
+
+  function toggleSection(id, btn, originalText) {
+    const el = document.getElementById(id);
+    const isHidden = el.classList.toggle('hidden');
+    btn.innerText = isHidden ? originalText : '❌ Fermer';
+    btn.style.background = isHidden ? '#606770' : '#d93025';
+  }
+</script>
+</body>
+</html>
