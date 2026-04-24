@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    :root { 
+      --primary: #2ecc71; --bg: #eceff1; --header-bg: #263238; --text: #37474f; 
+      --card: #ffffff; --accent: #e74c3c; --shadow: 0 6px 15px rgba(0,0,0,0.08);
+      --girl-color: #f06292; --boy-color: #2196f3;
+    }
+    body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); padding: 0; margin: 0; }
+    .app-container { max-width: 500px; margin: auto; padding: 15px; padding-bottom: 40px; }
+    
+    .header { background: var(--header-bg); color: white; text-align: center; padding: 18px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; }
+    .logout-btn { position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 22px; cursor: pointer; transition: transform 0.2s; }
+    .logout-btn:hover { transform: scale(1.1); }
+
+    /* Boutons réactifs */
+    .contact-btn { 
+      display: block; text-align: center; padding: 14px; background: var(--primary); 
+      color: white; text-decoration: none; border-radius: 12px; font-weight: bold; 
+      margin-top: 10px; cursor: pointer; transition: all 0.2s ease; border: none; font-size: 15px;
+    }
+    .contact-btn:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3); }
+    .contact-btn:active:not(:disabled) { transform: translateY(0); }
+    .contact-btn:disabled { background: #95a5a6; cursor: not-allowed; }
+
+    /* Login Overlay */
+    #loginOverlay { position: fixed; inset: 0; background: var(--header-bg); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+    .login-box { background: white; padding: 35px 30px; border-radius: 20px; text-align: center; width: 80%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .error-msg { color: #e74c3c; font-size: 14px; font-weight: bold; margin-top: 15px; display: none; background: #fdf0ed; padding: 10px; border-radius: 8px; border: 1px solid #fadbd8; }
+    
+    /* Loaders */
+    .loader-container { text-align: center; padding: 50px 20px; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
+    .btn-spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; margin: 0 auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loader-text { color: #5f6368; font-weight: bold; margin-top: 15px; }
+
+    /* Tabs */
+    .tabs { display: flex; margin: 20px 0; background: #cfd8dc; padding: 6px; border-radius: 14px; }
+    .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; border-radius: 10px; font-weight: bold; color: #546e7a; transition: background 0.3s; }
+    .tab.active { background: white; color: var(--header-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+    /* Arena / Cards */
+    .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); position: relative; transition: transform 0.2s; }
+    .card:active { transform: scale(0.98); }
+    .arena-header { color: var(--header-bg); font-weight: 800; font-size: 18px; margin-bottom: 12px; text-align: center; }
+    
+    .arena-row { display: flex; align-items: center; justify-content: space-between; background: #fdfdfd; padding: 12px; border-radius: 12px; border: 1px solid #eee; }
+    .team-block { flex: 1; text-align: center; overflow: hidden; }
+    .swords { font-size: 24px; padding: 0 10px; color: #ccc; }
+    
+    .t-id { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; }
+    .t-name { font-weight: 900; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--header-bg); margin: 4px 0; }
+    .cpt-sub { font-size: 13px; color: #666; font-style: italic; margin-bottom: 5px; }
+
+    /* Match "En cours" (Live) */
+    .live-match { border: 2px solid var(--accent); background-color: #fffcfc; box-shadow: 0 0 15px rgba(231, 76, 60, 0.15); }
+    .live-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; animation: pulseLive 1.5s infinite; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
+    @keyframes pulseLive { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } 100% { transform: translateX(-50%) scale(1); } }
+
+    /* Badges Genre */
+    .genre-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; color: white; margin: 2px; }
+    .g-f { background: var(--girl-color); }
+    .g-h { background: var(--boy-color); }
+
+    /* Formulaires & Recherche */
+    input, select { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; margin-bottom: 10px; box-sizing: border-box; font-size: 15px; outline: none; transition: border 0.3s; }
+    input:focus, select:focus { border-color: var(--primary); }
+    
+    .dropdown-container { position: relative; margin-bottom: 20px; }
+    .team-list { position: absolute; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #ddd; border-radius: 0 0 12px 12px; z-index: 100; display: none; box-shadow: 0 8px 16px rgba(0,0,0,0.1); text-align: left; }
+    .team-item { padding: 14px; cursor: pointer; border-bottom: 1px solid #f1f3f4; font-weight: 500; }
+    .team-item:hover { background: #f8f9fa; color: var(--primary); }
+
+    .info-msg { text-align: center; color: #888; font-style: italic; padding: 20px; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div class="login-box">
+    <div style="font-size:45px; margin-bottom:10px;">🔐</div>
+    <h3 style="margin-top:0; color:var(--header-bg);">Accès Staff</h3>
+    <input type="password" id="pinInput" placeholder="Code PIN à 4 chiffres" style="text-align:center; letter-spacing: 2px; font-weight:bold;" onkeypress="if(event.key === 'Enter') checkPin()">
+    <button id="btnUnlock" onclick="checkPin()" class="contact-btn" style="width:100%">DÉVERROUILLER</button>
+    <div id="loginError" class="error-msg">❌ Code PIN incorrect.</div>
+  </div>
+</div>
+
+<div id="adminContent" class="app-container hidden">
+  <div class="header">
+    <h2 style="margin:0;">🛠️ STAFF DASHBOARD</h2>
+    <button class="logout-btn" onclick="logoutStaff()" title="Se déconnecter">🚪</button>
+  </div>
+
+  <div id="dataLoader" class="loader-container">
+    <div class="spinner"></div>
+    <div class="loader-text">Récupération du planning...</div>
+  </div>
+
+  <div id="mainUI" class="hidden">
+    <div class="tabs">
+      <div class="tab active" id="tabCourts" onclick="switchTab('courts')">📍 Terrains</div>
+      <div class="tab" id="tabTeams" onclick="switchTab('teams')">👥 Équipes</div>
+    </div>
+
+    <div id="sectionCourts">
+      <select id="courtSelect" onchange="renderMatches()">
+        <option value="">-- Choisir un terrain --</option>
+      </select>
+      <div id="courtResults">
+        <div class="info-msg">Veuillez sélectionner un terrain pour voir les matchs.</div>
+      </div>
+    </div>
+
+    <div id="sectionTeams" class="hidden">
+      <div class="dropdown-container">
+        <input type="text" id="teamSearch" oninput="handleSearch(this.value)" onclick="handleSearch(this.value)" placeholder="🔍 Chercher une équipe..." autocomplete="off">
+        <div id="teamList" class="team-list"></div>
+      </div>
+      <div id="teamResults">
+        <div class="info-msg">Utilisez la barre de recherche ou cliquez sur un match pour voir les infos d'une équipe.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let DB = { teamMap: {}, matchData: [], teamNames: [] };
+
+  /** 0. VERIFICATION DE LA SESSION AU CHARGEMENT DE LA PAGE **/
+  window.onload = function() {
+    if (localStorage.getItem('polysport_staff_auth') === 'true') {
+      document.getElementById('loginOverlay').classList.add('hidden'); // On cache au lieu de remove()
+      document.getElementById('adminContent').classList.remove('hidden');
+      initAdmin();
+    }
+  };
+
+  /** 1. GESTION DU LOGIN & LOGOUT **/
+  function checkPin() {
+    const btn = document.getElementById('btnUnlock');
+    const err = document.getElementById('loginError');
+    const pin = document.getElementById('pinInput').value;
+
+    if(!pin) return;
+
+    btn.innerHTML = '<div class="btn-spinner"></div>';
+    btn.disabled = true;
+    err.style.display = 'none';
+
+    google.script.run.withSuccessHandler(ok => {
+      if(ok) { 
+        localStorage.setItem('polysport_staff_auth', 'true');
+        
+        // On masque le login, on affiche le contenu
+        document.getElementById('loginOverlay').classList.add('hidden'); 
+        document.getElementById('adminContent').classList.remove('hidden'); 
+        initAdmin(); 
+      } else {
+        btn.innerHTML = 'DÉVERROUILLER';
+        btn.disabled = false;
+        err.style.display = 'block';
+        document.getElementById('pinInput').value = ''; 
+        document.getElementById('pinInput').focus();
+      }
+    }).verifyStaffPin(pin);
+  }
+
+  function logoutStaff() {
+    localStorage.removeItem('polysport_staff_auth');
+    
+    // Au lieu de recharger la page, on réinitialise l'affichage proprement :
+    document.getElementById('adminContent').classList.add('hidden');
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    
+    // On remet le bouton de login à son état initial
+    const btn = document.getElementById('btnUnlock');
+    btn.innerHTML = 'DÉVERROUILLER';
+    btn.disabled = false;
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('pinInput').value = '';
+    
+    // On repasse sur l'onglet par défaut au cas où
+    switchTab('courts');
+  }
+
+  /** 2. INITIALISATION DES DONNÉES **/
+  function initAdmin() {
+    google.script.run.withSuccessHandler(data => {
+      let cleanMap = {};
+      for(let key in data.teamMap) {
+        let cleanKey = key.trim().toLowerCase();
+        cleanMap[cleanKey] = data.teamMap[key];
+        cleanMap[cleanKey].nom = cleanMap[cleanKey].nom.trim();
+      }
+      
+      DB = data;
+      DB.teamMap = cleanMap;
+      DB.teamNames = Object.keys(DB.teamMap).map(k => DB.teamMap[k].nom);
+      
+      document.getElementById('dataLoader').style.display = 'none';
+      document.getElementById('mainUI').classList.remove('hidden');
+
+      const courts = DB.matchData[0].slice(1);
+      const sel = document.getElementById('courtSelect');
+      sel.innerHTML = '<option value="">-- Choisir un terrain --</option>'; // Réinitialise si relog
+      courts.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
+    }).getInitialAdminData();
+
+    // Rafraîchit l'affichage des matchs toutes les 60 secondes
+    setInterval(renderMatches, 60000);
+  }
+
+  /** 3. LOGIQUE DES TERRAINS ET MATCHS EN COURS **/
+  function getMatchInfo(cellText) {
+    const lines = cellText.split('\n');
+    if (lines.length < 2) return null;
+    
+    const names = lines[1].split(/\s+VS\s+/i); 
+    const n1 = names[0] ? names[0].trim().toLowerCase() : "";
+    const n2 = names[1] ? names[1].trim().toLowerCase() : "";
+
+    return {
+      t1: DB.teamMap[n1] || { nom: names[0] || "?", capitaine: "?", stats: {femmes:0, hommes:0} },
+      t2: DB.teamMap[n2] || { nom: names[1] || "?", capitaine: "?", stats: {femmes:0, hommes:0} }
+    };
+  }
+
+  function isMatchLive(timeStr, nextTimeStr) {
+    if (!timeStr) return false;
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    const matchT1 = timeStr.toString().match(/(\d{1,2})[h:](\d{2})/i);
+    if (!matchT1) return false;
+    
+    const startMin = parseInt(matchT1[1]) * 60 + parseInt(matchT1[2]);
+    let endMin = startMin + 30;
+
+    if (nextTimeStr) {
+      const matchT2 = nextTimeStr.toString().match(/(\d{1,2})[h:](\d{2})/i);
+      if (matchT2) endMin = parseInt(matchT2[1]) * 60 + parseInt(matchT2[2]);
+    }
+
+    return (currentMinutes >= startMin && currentMinutes < endMin);
+  }
+
+  function renderMatches() {
+    const court = document.getElementById('courtSelect').value;
+    const res = document.getElementById('courtResults');
+    
+    if(!court) {
+      res.innerHTML = '<div class="info-msg">Veuillez sélectionner un terrain pour voir les matchs.</div>';
+      return;
+    }
+
+    res.innerHTML = "";
+    const colIdx = DB.matchData[0].indexOf(court);
+    let matchFound = false;
+
+    for(let i=1; i < DB.matchData.length; i++) {
+      const cell = DB.matchData[i][colIdx];
+      if(!cell) continue;
+      matchFound = true;
+
+      const info = getMatchInfo(cell);
+      const idLines = cell.split('\n')[0].split(/ vs /i);
+
+      const currentTimeStr = DB.matchData[i][0];
+      const nextTimeStr = (i + 1 < DB.matchData.length) ? DB.matchData[i+1][0] : null;
+      
+      const isLive = isMatchLive(currentTimeStr, nextTimeStr);
+      const liveClass = isLive ? "live-match" : "";
+      const liveBadgeHtml = isLive ? `<div class="live-badge">🔴 EN DIRECT</div>` : "";
+
+      res.innerHTML += `
+        <div class="card ${liveClass}" onclick="showTeamDetails('${info.t1.nom.replace(/'/g,"\\'")}', '${info.t2.nom.replace(/'/g,"\\'")}')" style="cursor:pointer">
+          ${liveBadgeHtml}
+          <div class="arena-header">⏰ ${currentTimeStr}</div>
+          <div class="arena-row">
+            <div class="team-block">
+              <div class="t-id">${idLines[0] || ""}</div>
+              <div class="t-name">${info.t1.nom}</div>
+              <div class="cpt-sub">${info.t1.capitaine}</div>
+              <span class="genre-badge g-f">♀ ${info.t1.stats.femmes}</span>
+              <span class="genre-badge g-h">♂ ${info.t1.stats.hommes}</span>
+            </div>
+            <div class="swords">⚔️</div>
+            <div class="team-block">
+              <div class="t-id">${idLines[1] || ""}</div>
+              <div class="t-name">${info.t2.nom}</div>
+              <div class="cpt-sub">${info.t2.capitaine}</div>
+              <span class="genre-badge g-f">♀ ${info.t2.stats.femmes}</span>
+              <span class="genre-badge g-h">♂ ${info.t2.stats.hommes}</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    if(!matchFound) res.innerHTML = '<div class="info-msg">Aucun match programmé sur ce terrain.</div>';
+  }
+
+  /** 4. RECHERCHE ET AFFICHAGE DES ÉQUIPES **/
+  
+  // Masquer la liste si on clique ailleurs sur la page
+  document.addEventListener('click', function(e) {
+    const searchInput = document.getElementById('teamSearch');
+    const listDiv = document.getElementById('teamList');
+    if (e.target !== searchInput && e.target !== listDiv && !listDiv.contains(e.target)) {
+      listDiv.style.display = 'none';
+    }
+  });
+
+  function handleSearch(val) {
+    const listDiv = document.getElementById('teamList');
+    listDiv.innerHTML = '';
+    
+    const lowerVal = val.trim().toLowerCase();
+    
+    // On ne bloque plus la recherche en dessous de 2 caractères :
+    // Si la case est vide ou en cours de frappe, on filtre
+    const filtered = DB.teamNames.filter(t => t.toLowerCase().includes(lowerVal));
+
+    if(filtered.length > 0) {
+      listDiv.style.display = 'block';
+      filtered.forEach(t => {
+        const item = document.createElement('div');
+        item.className = 'team-item';
+        item.innerText = t;
+        item.onclick = (e) => { 
+          e.stopPropagation(); // Empêche le document click de se déclencher
+          document.getElementById('teamSearch').value = t; 
+          listDiv.style.display = 'none'; 
+          showSingleTeam(t); 
+        };
+        listDiv.appendChild(item);
+      });
+    } else {
+      listDiv.style.display = 'none';
+    }
+  }
+
+  function showSingleTeam(teamName) {
+    const res = document.getElementById('teamResults');
+    const t = DB.teamMap[teamName.trim().toLowerCase()];
+    res.innerHTML = t ? renderTeamCard(t) : "<div class='info-msg'>Équipe introuvable.</div>";
+  }
+
+  function showTeamDetails(n1, n2) {
+    switchTab('teams');
+    const res = document.getElementById('teamResults');
+    document.getElementById('teamSearch').value = "";
+    document.getElementById('teamList').style.display = 'none';
+    
+    res.innerHTML = renderTeamCard(DB.teamMap[n1.trim().toLowerCase()]) + renderTeamCard(DB.teamMap[n2.trim().toLowerCase()]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderTeamCard(t) {
+    if(!t) return "";
+    return `
+      <div class="card" style="border-left: 6px solid var(--header-bg);">
+        <h3 style="margin-top:0; color:var(--header-bg); font-size:22px;">${t.nom}</h3>
+        <p style="font-size:15px;">👑 <b>${t.capitaine}</b> <br>
+           <span style="color:var(--girl-color); font-weight:bold;">♀ ${t.stats.femmes} Femmes</span> | 
+           <span style="color:var(--boy-color); font-weight:bold;">♂ ${t.stats.hommes} Hommes</span>
+        </p>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+          <a href="tel:${t.phone}" class="contact-btn" style="flex:1; margin-top:0;">📞 APPELER</a>
+          <a href="mailto:${t.email}" class="contact-btn" style="flex:1; margin-top:0; background:#455a64">✉️ EMAIL</a>
+        </div>
+        <div style="margin-top:15px; padding-top:15px; border-top:1px solid #eee;">
+          <b style="font-size:12px; color:#999; text-transform:uppercase;">Effectif complet :</b>
+          <p style="font-size:13px; color:#555; line-height:1.5; margin-bottom:0;">${t.participants.join(', ')}</p>
+        </div>
+      </div>`;
+  }
+
+  function switchTab(t) {
+    document.getElementById('sectionTeams').classList.toggle('hidden', t!=='teams');
+    document.getElementById('sectionCourts').classList.toggle('hidden', t!=='courts');
+    document.getElementById('tabTeams').classList.toggle('active', t==='teams');
+    document.getElementById('tabCourts').classList.toggle('active', t==='courts');
+  }
+</script>
+</body>
+</html>
