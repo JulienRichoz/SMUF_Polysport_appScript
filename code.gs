@@ -6,8 +6,8 @@
  * Stratégie : Chargement unique des données pour optimiser les performances.
  */
 
-const ADMIN_TOKEN = "XXXX"; // Clé secrète d'accès à l'URL Admin
-const BACKEND_PIN = "0000"; // Code de déverrouillage de la page
+const ADMIN_TOKEN = "PolySportGames2026"; // Clé secrète d'accès à l'URL Admin
+const BACKEND_PIN = "2526";               // Code de déverrouillage de la page
 
 /**
  * Point d'entrée de l'application Web.
@@ -96,17 +96,26 @@ function getInitialAppData() {
  * Charge toutes les données détaillées pour le Staff en un seul appel.
  * @returns {Object} Objet contenant le dictionnaire des équipes et la matrice des matchs.
  */
+/**
+ * API : APPLICATION STAFF (ADMIN)
+ */
 function getInitialAdminData() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // 1. Création d'un dictionnaire complet des équipes pour un accès instantané O(1)
+  // --- NOUVEAU : Récupération de la date du tournoi pour l'admin ---
+  const sheetGen = ss.getSheetByName('PLANNING_GENERAL');
+  const rawDate = sheetGen.getRange("B2").getValue(); 
+  // On transforme la date en texte ISO (format universel) pour éviter les inversions jour/mois
+  const tournamentDate = (rawDate instanceof Date) ? rawDate.toISOString() : rawDate;
+
+  // 1. Création du dictionnaire des équipes
   const sheetTeams = ss.getSheetByName('REF_Equipes');
   const teamData = sheetTeams.getDataRange().getValues();
   let teamMap = {};
   
   for (let i = 1; i < teamData.length; i++) {
     const name = teamData[i][1];
-    if (!name) continue; // Ignore les lignes vides
+    if (!name) continue;
     
     teamMap[name.toLowerCase()] = {
       nom: name, 
@@ -116,7 +125,7 @@ function getInitialAdminData() {
       participants: [
         teamData[i][5], teamData[i][6], teamData[i][7], 
         teamData[i][8], teamData[i][9], teamData[i][10], teamData[i][11]
-      ].filter(String), // Filtre les colonnes vides
+      ].filter(String),
       stats: { femmes: teamData[i][12], hommes: teamData[i][13] }
     };
   }
@@ -125,7 +134,8 @@ function getInitialAdminData() {
   const sheetMatches = ss.getSheetByName('AFFICHAGE_FINAL');
   const matchData = sheetMatches.getDataRange().getDisplayValues();
 
-  return { teamMap, matchData };
+  // On renvoie bien TOUT, y compris la date
+  return { teamMap, matchData, tournamentDate };
 }
 
 /**
