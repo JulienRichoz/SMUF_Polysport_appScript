@@ -128,7 +128,8 @@
 </div>
 
 <script>
-  let DB = { teamMap: {}, matchData: [], teamNames: [] };
+  // AJOUT : tournamentDate a été ajouté ici
+  let DB = { teamMap: {}, matchData: [], teamNames: [], tournamentDate: "" };
 
   /** 0. VERIFICATION DE LA SESSION AU CHARGEMENT DE LA PAGE **/
   window.onload = function() {
@@ -138,6 +139,17 @@
       initAdmin();
     }
   };
+
+  /** NOUVEAU : Vérifie si on est bien le jour du tournoi **/
+  function isTournamentDay() {
+    if (!DB.tournamentDate) return false;
+    const now = new Date();
+    const tournament = new Date(DB.tournamentDate);
+    
+    return now.getFullYear() === tournament.getFullYear() &&
+           now.getMonth() === tournament.getMonth() &&
+           now.getDate() === tournament.getDate();
+  }
 
   /** 1. GESTION DU LOGIN & LOGOUT **/
   function checkPin() {
@@ -230,7 +242,8 @@
   }
 
   function isMatchLive(timeStr, nextTimeStr) {
-    if (!timeStr) return false;
+    // MODIFICATION : Ajout de la vérification isTournamentDay() ici
+    if (!timeStr || !isTournamentDay()) return false;
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
