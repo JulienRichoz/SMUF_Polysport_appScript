@@ -2,17 +2,11 @@
  * ============================================================================
  * POLYSPORT 2026 - BACKEND SCRIPT
  * ============================================================================
- * Gestion centralisée des données pour les vues Publique et Staff.
- * Stratégie : Chargement unique des données pour optimiser les performances.
  */
 
-const ADMIN_TOKEN = "PolySportGames2026"; // Clé secrète d'accès à l'URL Admin
-const BACKEND_PIN = "2526";               // Code de déverrouillage de la page
+const ADMIN_TOKEN = "PolySportGames2026"; 
+const BACKEND_PIN = "2526";               
 
-/**
- * Point d'entrée de l'application Web.
- * Route l'utilisateur vers la page Admin ou Publique selon l'URL.
- */
 function doGet(e) {
   if (e.parameter.page === 'admin' && e.parameter.token === ADMIN_TOKEN) {
     return HtmlService.createTemplateFromFile('admin')
@@ -27,11 +21,6 @@ function doGet(e) {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/**
- * Vérifie le code PIN du Staff côté serveur.
- * @param {string} inputPin - Le code PIN saisi par l'utilisateur.
- * @returns {boolean} True si le PIN est correct.
- */
 function verifyStaffPin(inputPin) {
   return inputPin === BACKEND_PIN;
 }
@@ -41,31 +30,26 @@ function verifyStaffPin(inputPin) {
  * API : APPLICATION PUBLIQUE
  * ============================================================================
  */
-
-/**
- * Charge toutes les données nécessaires pour l'application Publique en un seul appel.
- * @returns {Object} Objet contenant la timeline, la date, les matchs et les équipes.
- */
 function getInitialAppData() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // 1. Récupération du Planning Général
   const sheetGen = ss.getSheetByName('PLANNING_GENERAL');
   const dataGen = sheetGen.getDataRange().getDisplayValues();
+  
+  const rawDate = sheetGen.getRange("B2").getValue(); 
+  let tournamentDate = (rawDate instanceof Date) ? rawDate.toISOString() : rawDate;
+
   let timeline = [];
   let afterMessage = "";
-  let tournamentDate = "";
 
   for (let i = 1; i < dataGen.length; i++) {
     const act = dataGen[i][0];
     if (!act) continue;
+    if (act.toLowerCase().includes("date")) continue; 
     
-    if (act.toLowerCase().includes("date")) { 
-      tournamentDate = dataGen[i][1]; 
-      continue; 
-    }
-    if (act.toLowerCase().includes("info") || act.toLowerCase().includes("after")) {
+    if (act.toLowerCase().includes("info") || act.toLowerCase().includes("live")) {
       afterMessage = dataGen[i][2];
+      continue;
     }
     
     timeline.push({ 
@@ -75,15 +59,14 @@ function getInitialAppData() {
     });
   }
 
-  // 2. Récupération de tous les Matchs (pour filtrage local rapide)
   const sheetMatches = ss.getSheetByName('AFFICHAGE_FINAL');
   const matchData = sheetMatches.getDataRange().getDisplayValues();
+  const appUrl = ScriptApp.getService().getUrl();
 
-  // 3. Récupération de toutes les Equipes
   const sheetTeams = ss.getSheetByName('REF_Equipes');
   const teams = sheetTeams.getRange("B2:B150").getValues().flat().filter(String).sort();
 
-  return { timeline, afterMessage, tournamentDate, matchData, teams };
+  return { timeline, afterMessage, tournamentDate, matchData, teams, appUrl };
 }
 
 /**
@@ -91,24 +74,32 @@ function getInitialAppData() {
  * API : APPLICATION STAFF (ADMIN)
  * ============================================================================
  */
+function getInitialAdminData(pin) {
+  if (pin !== BACKEND_PIN) {
+    throw new Error("Accès refusé : PIN invalide ou manquant.");
+  }
 
-/**
- * Charge toutes les données détaillées pour le Staff en un seul appel.
- * @returns {Object} Objet contenant le dictionnaire des équipes et la matrice des matchs.
- */
-/**
- * API : APPLICATION STAFF (ADMIN)
- */
-function getInitialAdminData() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  // --- NOUVEAU : Récupération de la date du tournoi pour l'admin ---
   const sheetGen = ss.getSheetByName('PLANNING_GENERAL');
+  const dataGen = sheetGen.getDataRange().getDisplayValues();
+  
   const rawDate = sheetGen.getRange("B2").getValue(); 
-  // On transforme la date en texte ISO (format universel) pour éviter les inversions jour/mois
   const tournamentDate = (rawDate instanceof Date) ? rawDate.toISOString() : rawDate;
+  
+  let afterMessage = "";
 
-  // 1. Création du dictionnaire des équipes
+  for (let i = 1; i < dataGen.length; i++) {
+    const act = dataGen[i][0];
+    if (!act) continue;
+    if (act.toLowerCase().includes("date")) continue;
+    
+    if (act.toLowerCase().includes("info") || act.toLowerCase().includes("live")) {
+      afterMessage = dataGen[i][2];
+      continue;
+    }
+  }
+
   const sheetTeams = ss.getSheetByName('REF_Equipes');
   const teamData = sheetTeams.getDataRange().getValues();
   let teamMap = {};
@@ -118,24 +109,69 @@ function getInitialAdminData() {
     if (!name) continue;
     
     teamMap[name.toLowerCase()] = {
-      nom: name, 
-      capitaine: teamData[i][2], 
-      phone: teamData[i][3], 
-      email: teamData[i][4],
+      nom: name, capitaine: teamData[i][2], phone: teamData[i][3], email: teamData[i][4],
       participants: [
-        teamData[i][5], teamData[i][6], teamData[i][7], 
-        teamData[i][8], teamData[i][9], teamData[i][10], teamData[i][11]
+        teamData[i][5], teamData[i][6], teamData[i][7], teamData[i][8], teamData[i][9], teamData[i][10], teamData[i][11]
       ].filter(String),
       stats: { femmes: teamData[i][12], hommes: teamData[i][13] }
     };
   }
 
-  // 2. Récupération de la grille des matchs
   const sheetMatches = ss.getSheetByName('AFFICHAGE_FINAL');
   const matchData = sheetMatches.getDataRange().getDisplayValues();
+  const appUrl = ScriptApp.getService().getUrl();
 
-  // On renvoie bien TOUT, y compris la date
-  return { teamMap, matchData, tournamentDate };
+  // --- RÉCUPÉRATION DES BÉNÉVOLES ET VARIABLES GLOBALES ---
+  let staffMap = {};
+  let staffShift1Header = "18h00 - 20h30";
+  let staffShift2Header = "20h30 - 23h00";
+  let globalMep = "17h30";
+  let globalRangement = "23h00";
+  let globalAfter = "23h30";
+
+  const sheetStaff = ss.getSheetByName('REF_Benevoles');
+  
+  if (sheetStaff) {
+    const staffData = sheetStaff.getDataRange().getDisplayValues();
+    
+    // Extraction des En-têtes des Shifts (Ligne 1)
+    if(staffData.length > 0) {
+       staffShift1Header = staffData[0][5] || staffShift1Header;
+       staffShift2Header = staffData[0][6] || staffShift2Header;
+    }
+    
+    // Extraction des Horaires Globaux (Depuis la ligne 2, index 1)
+    if(staffData.length > 1 && staffData[1]) {
+       globalMep = staffData[1][7] ? formatToFrenchTime(staffData[1][7]) : globalMep;
+       globalRangement = staffData[1][8] ? formatToFrenchTime(staffData[1][8]) : globalRangement;
+       globalAfter = staffData[1][9] ? formatToFrenchTime(staffData[1][9]) : globalAfter;
+    }
+
+    for (let i = 1; i < staffData.length; i++) {
+      const name = staffData[i][1]; 
+      if (!name) continue;
+      
+      staffMap[name.toLowerCase()] = {
+        nom: name,
+        groupe: staffData[i][2],     
+        posteFixe: staffData[i][3],  
+        terrains: staffData[i][4],   
+        shift1: staffData[i][5],     
+        shift2: staffData[i][6]     
+      };
+    }
+  }
+
+  // --- CRÉATION DE LA TIMELINE SPÉCIFIQUE ADMIN (Basée sur REF_Benevoles) ---
+  let adminTimeline = [
+      { time: globalMep, label: "Mise en place", details: "Préparation et accueil du staff" },
+      { time: staffShift1Header, label: "Shift 1", details: "Première vague d'activités" },
+      { time: staffShift2Header, label: "Shift 2", details: "Deuxième vague d'activités" },
+      { time: globalRangement, label: "Rangement", details: "Nettoyage et clôture des terrains" },
+      { time: globalAfter, label: "After", details: "Moment de détente bien mérité" }
+  ];
+
+  return { teamMap, matchData, tournamentDate, appUrl, adminTimeline, afterMessage, staffMap, staffShift1Header, staffShift2Header, globalMep, globalRangement, globalAfter };
 }
 
 /**
@@ -143,20 +179,12 @@ function getInitialAdminData() {
  * UTILITAIRES
  * ============================================================================
  */
-
-/**
- * Formate une heure ou une plage horaire brute en format français (ex: 14h30 - 15h00).
- * @param {string} timeInput - L'heure brute (ex: "14:30:00 - 15:00:00").
- * @returns {string} L'heure formatée.
- */
 function formatToFrenchTime(timeInput) {
   if (!timeInput) return "";
-  
   const parts = timeInput.toString().split('-');
   const formatted = parts.map(p => {
     const t = p.trim().split(':');
     return t.length >= 2 ? `${t[0].padStart(2, '0')}h${t[1].padStart(2, '0')}` : p.trim();
   });
-  
   return formatted.join(' - ');
 }
