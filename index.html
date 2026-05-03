@@ -14,6 +14,10 @@
     .after-alert { background: #fff3e0; border: 2px dashed #ff9800; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; display: none; animation: pulseAlert 2s infinite; }
     @keyframes pulseAlert { 0% {box-shadow: 0 0 0 0 rgba(255,152,0,0.4);} 70% {box-shadow: 0 0 0 10px rgba(255,152,0,0);} 100% {box-shadow: 0 0 0 0 rgba(255,152,0,0);} }
 
+    /* Bannière Grande Pause (Dynamique par équipe) */
+    .pause-banner { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); line-height: 1.4; }
+    .pause-banner b { font-size: 16px; }
+
     /* Recherche */
     .dropdown-container { position: relative; margin-bottom: 20px; }
     input#teamSearch { width: 100%; padding: 16px; border: 2px solid #dadce0; border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; background: white; }
@@ -103,16 +107,18 @@
         document.getElementById('afterAlert').style.display = 'block';
         document.getElementById('afterContent').innerText = data.afterMessage;
       }
+
       renderTimeline(data.timeline);
       checkGlobalStart();
     }).getInitialAppData();
   };
 
-  /** NOUVEAU : Vérifie si on est bien le jour du tournoi **/
+  /** Vérifie si on est bien le jour du tournoi **/
   function isTournamentDay() {
     if (!APP_DATA.tournamentDate) return false;
     const now = new Date();
     const tournament = new Date(APP_DATA.tournamentDate);
+    if (isNaN(tournament)) return false; 
     
     return now.getFullYear() === tournament.getFullYear() &&
            now.getMonth() === tournament.getMonth() &&
@@ -169,7 +175,7 @@
   }, 60000);
 
   function isMatchLive(timeStr, nextTimeStr) {
-    if (!timeStr || !isTournamentDay()) return false; // Bloque si pas le bon jour
+    if (!timeStr || !isTournamentDay()) return false; 
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const matchT1 = timeStr.toString().match(/(\d{1,2})[h:](\d{2})/i);
@@ -197,25 +203,39 @@
 
     const isToday = isTournamentDay();
 
+    // Variables pour détecter la pause dynamiquement
+    let prevEndTimeStr = null;
+    let prevEndMins = 0;
+
     for(let i=1; i < APP_DATA.matchData.length; i++) {
       for(let j=1; j < APP_DATA.matchData[i].length; j++) {
         const cell = APP_DATA.matchData[i][j];
         if(cell.toLowerCase().includes(teamName.toLowerCase())) {
+          
           const timeStr = APP_DATA.matchData[i][0];
           const nextTimeStr = (i + 1 < APP_DATA.matchData.length) ? APP_DATA.matchData[i+1][0] : null;
           
           const isLive = isMatchLive(timeStr, nextTimeStr);
           const match = parseMatchCell(cell);
           
-          const timeMatch = timeStr.match(/(\d{1,2})[h:](\d{2})/i);
+          // Séparation début et fin du match actuel
+          const timeParts = timeStr.toString().split('-');
+          const startStr = timeParts[0].trim();
+          const endStr = timeParts.length > 1 ? timeParts[1].trim() : startStr;
+
+          const timeMatch = startStr.match(/(\d{1,2})[h:](\d{2})/i);
           const startMin = timeMatch ? parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]) : 0;
 
-          // On ne calcule le "En cours" et "Prochain match" que si c'est aujourd'hui
           if (isToday) {
             if (isLive) matchEnCours = { time: timeStr, venue: headers[j] };
             if (!isLive && startMin > currentMinutes && (!nextMatch || startMin < nextMatch.start)) {
               nextMatch = { start: startMin, time: timeStr, diff: startMin - currentMinutes, venue: headers[j] };
             }
+          }
+
+          // NOUVEAU : Si l'écart de repos est > à 25 min, on ajoute la bannière !
+          if (prevEndTimeStr && (startMin - prevEndMins > 25)) {
+            matchesHtml += `<div class="pause-banner">🌭 <b>GRANDE PAUSE (${prevEndTimeStr} - ${startStr})</b><br>Rendez-vous à la buvette ! 🍻</div>`;
           }
 
           matchesHtml += `
@@ -240,6 +260,11 @@
                 </div>
               </div>
             </div>`;
+
+          // Mise à jour des valeurs "Précédentes" pour le prochain tour de boucle
+          const endMatch = endStr.match(/(\d{1,2})[h:](\d{2})/i);
+          prevEndMins = endMatch ? parseInt(endMatch[1]) * 60 + parseInt(endMatch[2]) : startMin + 12;
+          prevEndTimeStr = endStr;
         }
       }
     }
@@ -257,7 +282,6 @@
         summaryHtml = `<div class="status-box" style="background:#e6f4ea; border-color:#137333; color:#137333;">🏁 <b>Tous vos matchs sont terminés !</b></div>`;
       }
     } else if (matchesHtml !== "") {
-        // Optionnel : un petit message pour dire "Voici votre planning pour le jour J"
         summaryHtml = `<div class="status-box" style="background:#f1f3f4; border:none; color:#5f6368;">📅 Voici votre planning pour le tournoi.</div>`;
     }
     
@@ -273,7 +297,6 @@
     let timeParts = startTimeStr.split(/[:h]/i);
     d.setHours(parseInt(timeParts[0]) || 17, parseInt(timeParts[1]) || 30, 0, 0);
 
-    // Si on est le jour même, on affiche un message différent
     if(isTournamentDay()) {
        infoDiv.innerHTML = `🔥 <b>C'est aujourd'hui !</b><br>Cherchez votre équipe pour suivre vos matchs en direct.`;
        infoDiv.style.background = "#fff1f0"; infoDiv.style.color = "#d93025";
