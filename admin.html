@@ -14,7 +14,6 @@
     .logout-btn { position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 22px; cursor: pointer; transition: transform 0.2s; }
     .logout-btn:hover { transform: scale(1.1); }
 
-    /* Boutons réactifs */
     .contact-btn { 
       display: block; text-align: center; padding: 14px; background: var(--primary); 
       color: white; text-decoration: none; border-radius: 12px; font-weight: bold; 
@@ -24,24 +23,27 @@
     .contact-btn:active:not(:disabled) { transform: translateY(0); }
     .contact-btn:disabled { background: #95a5a6; cursor: not-allowed; }
 
-    /* Login Overlay */
     #loginOverlay { position: fixed; inset: 0; background: var(--header-bg); z-index: 1000; display: flex; align-items: center; justify-content: center; }
     .login-box { background: white; padding: 35px 30px; border-radius: 20px; text-align: center; width: 80%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .error-msg { color: #e74c3c; font-size: 14px; font-weight: bold; margin-top: 15px; display: none; background: #fdf0ed; padding: 10px; border-radius: 8px; border: 1px solid #fadbd8; }
     
-    /* Loaders */
     .loader-container { text-align: center; padding: 50px 20px; }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
     .btn-spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; margin: 0 auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .loader-text { color: #5f6368; font-weight: bold; margin-top: 15px; }
 
-    /* Tabs */
-    .tabs { display: flex; margin: 20px 0; background: #cfd8dc; padding: 6px; border-radius: 14px; }
-    .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; border-radius: 10px; font-weight: bold; color: #546e7a; transition: background 0.3s; }
+    .after-alert { background: #fff3e0; border: 2px dashed #ff9800; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; display: none; position: relative; animation: pulseAlert 2s infinite; }
+    .close-alert { position: absolute; top: 5px; right: 10px; cursor: pointer; color: #ff9800; font-size: 20px; font-weight: bold; }
+    @keyframes pulseAlert { 0% {box-shadow: 0 0 0 0 rgba(255,152,0,0.4);} 70% {box-shadow: 0 0 0 10px rgba(255,152,0,0);} 100% {box-shadow: 0 0 0 0 rgba(255,152,0,0);} }
+    
+    .pause-banner { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); line-height: 1.4; animation: popIn 0.5s ease-out; }
+    @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+    .tabs { display: flex; margin: 20px 0; background: #cfd8dc; padding: 6px; border-radius: 14px; gap:4px; }
+    .tab { flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-radius: 10px; font-weight: bold; color: #546e7a; font-size: 13px; transition: background 0.3s; }
     .tab.active { background: white; color: var(--header-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-    /* Arena / Cards */
     .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); position: relative; transition: transform 0.2s; }
     .card:active { transform: scale(0.98); }
     .arena-header { color: var(--header-bg); font-weight: 800; font-size: 18px; margin-bottom: 12px; text-align: center; }
@@ -54,17 +56,13 @@
     .t-name { font-weight: 900; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--header-bg); margin: 4px 0; }
     .cpt-sub { font-size: 13px; color: #666; font-style: italic; margin-bottom: 5px; }
 
-    /* Match "En cours" (Live) */
     .live-match { border: 2px solid var(--accent); background-color: #fffcfc; box-shadow: 0 0 15px rgba(231, 76, 60, 0.15); }
-    .live-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; animation: pulseLive 1.5s infinite; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
-    @keyframes pulseLive { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } 100% { transform: translateX(-50%) scale(1); } }
+    .match-number { position: absolute; top: 15px; left: 15px; background: #e8eaed; color: #5f6368; padding: 4px 8px; border-radius: 8px; font-size: 13px; font-weight: bold; }
 
-    /* Badges Genre */
     .genre-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; color: white; margin: 2px; }
     .g-f { background: var(--girl-color); }
     .g-h { background: var(--boy-color); }
 
-    /* Formulaires & Recherche */
     input, select { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; margin-bottom: 10px; box-sizing: border-box; font-size: 15px; outline: none; transition: border 0.3s; }
     input:focus, select:focus { border-color: var(--primary); }
     
@@ -75,6 +73,8 @@
 
     .info-msg { text-align: center; color: #888; font-style: italic; padding: 20px; }
     .hidden { display: none !important; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
   </style>
 </head>
 <body>
@@ -97,13 +97,23 @@
 
   <div id="dataLoader" class="loader-container">
     <div class="spinner"></div>
-    <div class="loader-text">Récupération du planning...</div>
+    <div class="loader-text">Récupération du système...</div>
   </div>
 
   <div id="mainUI" class="hidden">
+    
+    <div id="adminAlert" class="after-alert">
+      <span class="close-alert" onclick="document.getElementById('adminAlert').style.display='none'">×</span>
+      <div style="font-weight: bold; color: #e65100; margin-bottom: 5px;">📣 INFOS LIVE</div>
+      <div id="adminAlertContent"></div>
+    </div>
+
+    <!-- ONGLETS -->
     <div class="tabs">
       <div class="tab active" id="tabCourts" onclick="switchTab('courts')">📍 Terrains</div>
       <div class="tab" id="tabTeams" onclick="switchTab('teams')">👥 Équipes</div>
+      <div class="tab" id="tabStaff" onclick="switchTab('staff')">🙋‍♂️ Staff</div>
+      <div class="tab" id="tabInfos" onclick="switchTab('infos')">ℹ️ Infos</div>
     </div>
 
     <div id="sectionCourts">
@@ -117,41 +127,84 @@
 
     <div id="sectionTeams" class="hidden">
       <div class="dropdown-container">
-        <input type="text" id="teamSearch" oninput="handleSearch(this.value)" onclick="handleSearch(this.value)" placeholder="🔍 Chercher une équipe..." autocomplete="off">
+        <input type="text" id="teamSearch" placeholder="🔍 Chercher une équipe..." autocomplete="off">
         <div id="teamList" class="team-list"></div>
       </div>
       <div id="teamResults">
-        <div class="info-msg">Utilisez la barre de recherche ou cliquez sur un match pour voir les infos d'une équipe.</div>
+        <div class="info-msg">Utilisez la barre de recherche ou cliquez sur un match.</div>
       </div>
     </div>
+
+    <div id="sectionStaff" class="hidden">
+      <div class="dropdown-container">
+        <input type="text" id="staffSearch" placeholder="🔍 Chercher un bénévole..." autocomplete="off">
+        <div id="staffList" class="team-list"></div>
+      </div>
+      <div id="staffResults">
+        <div class="info-msg">Recherchez votre prénom/nom pour voir votre planning de la journée.</div>
+      </div>
+      <div class="card" style="border-left: 6px solid #9b59b6; text-align:center;">
+        <h3 style="margin-top:0; color:var(--header-bg);">Plan des arbitres / joueurs</h3>
+        <img src="https://i.postimg.cc/VkNnHnzC/Capture-d-e-cran-2026-05-03-a-23-29-02.png" style="width:100%; border-radius:8px;" alt="Plan">
+      </div>
+    </div>
+
+    <div id="sectionInfos" class="hidden">
+      <div class="card" style="border-left: 6px solid #f1c40f;">
+        <h3 style="margin-top:0; color:var(--header-bg);">📅 Programme Staff</h3>
+        <div id="adminTimelineContent"></div>
+      </div>
+      
+      <div class="card" style="border-left: 6px solid #9b59b6; text-align:center;">
+        <h3 style="margin-top:0; color:var(--header-bg);">🗺️ Plan des terrains</h3>
+        <img src="https://i.postimg.cc/yd1f4sh0/polysport26-plan.png" style="width:100%; border-radius:8px;" alt="Plan">
+      </div>
+      
+      <div class="card" style="border-left: 6px solid #34495e; text-align: center;">
+        <h3 style="color: var(--header-bg); margin-top: 0;">📱 Lien Public</h3>
+        <p class="info-msg" style="padding: 5px; margin-bottom: 20px;">Faites scanner ce QR code aux joueurs pour le planning en direct.</p>
+        <img id="qrCodeImg" src="" alt="QR Code" style="border-radius: 12px; box-shadow: var(--shadow); max-width: 200px; margin: 0 auto; display: block; border: 5px solid white;">
+        <br>
+        <a id="publicLinkBtn" href="#" target="_blank" class="contact-btn" style="display: inline-block; width: auto; padding: 10px 25px; background: #606770;">Tester la vue publique</a>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script>
-  // AJOUT : tournamentDate a été ajouté ici
-  let DB = { teamMap: {}, matchData: [], teamNames: [], tournamentDate: "" };
+  let DB = { teamMap: {}, matchData: [], teamNames: [], staffMap: {}, staffNames: [], tournamentDate: "", staffShift1Header: "", staffShift2Header: "", globalMep: "", globalRangement: "", globalAfter: "" };
 
-  /** 0. VERIFICATION DE LA SESSION AU CHARGEMENT DE LA PAGE **/
   window.onload = function() {
-    if (localStorage.getItem('polysport_staff_auth') === 'true') {
-      document.getElementById('loginOverlay').classList.add('hidden'); // On cache au lieu de remove()
+    const savedPin = sessionStorage.getItem('polysport_staff_pin');
+    if (savedPin) {
+      document.getElementById('loginOverlay').classList.add('hidden');
       document.getElementById('adminContent').classList.remove('hidden');
-      initAdmin();
+      initAdmin(savedPin);
     }
   };
 
-  /** NOUVEAU : Vérifie si on est bien le jour du tournoi **/
   function isTournamentDay() {
     if (!DB.tournamentDate) return false;
     const now = new Date();
     const tournament = new Date(DB.tournamentDate);
+    if (isNaN(tournament)) return false; 
     
     return now.getFullYear() === tournament.getFullYear() &&
            now.getMonth() === tournament.getMonth() &&
            now.getDate() === tournament.getDate();
   }
 
-  /** 1. GESTION DU LOGIN & LOGOUT **/
+  function parseMatchCell(cellText) {
+    try {
+      const lines = cellText.split('\n');
+      if (lines.length < 2) return { idA: "", idB: "", nameA: cellText, nameB: "" };
+      const ids = lines[0].split(/ vs /i);
+      const names = lines[1].split(/ VS /);
+      return { idA: ids[0]?.trim()||"", idB: ids[1]?.trim()||"", nameA: names[0]?.trim()||"", nameB: names[1]?.trim()||"" };
+    } catch(e) { return { idA: "", idB: "", nameA: cellText, nameB: "" }; }
+  }
+
   function checkPin() {
     const btn = document.getElementById('btnUnlock');
     const err = document.getElementById('loginError');
@@ -165,12 +218,10 @@
 
     google.script.run.withSuccessHandler(ok => {
       if(ok) { 
-        localStorage.setItem('polysport_staff_auth', 'true');
-        
-        // On masque le login, on affiche le contenu
+        sessionStorage.setItem('polysport_staff_pin', pin);
         document.getElementById('loginOverlay').classList.add('hidden'); 
         document.getElementById('adminContent').classList.remove('hidden'); 
-        initAdmin(); 
+        initAdmin(pin);
       } else {
         btn.innerHTML = 'DÉVERROUILLER';
         btn.disabled = false;
@@ -182,51 +233,70 @@
   }
 
   function logoutStaff() {
-    localStorage.removeItem('polysport_staff_auth');
-    
-    // Au lieu de recharger la page, on réinitialise l'affichage proprement :
+    sessionStorage.removeItem('polysport_staff_pin');
     document.getElementById('adminContent').classList.add('hidden');
     document.getElementById('loginOverlay').classList.remove('hidden');
     
-    // On remet le bouton de login à son état initial
     const btn = document.getElementById('btnUnlock');
     btn.innerHTML = 'DÉVERROUILLER';
     btn.disabled = false;
     document.getElementById('loginError').style.display = 'none';
     document.getElementById('pinInput').value = '';
     
-    // On repasse sur l'onglet par défaut au cas où
     switchTab('courts');
   }
 
-  /** 2. INITIALISATION DES DONNÉES **/
-  function initAdmin() {
-    google.script.run.withSuccessHandler(data => {
-      let cleanMap = {};
-      for(let key in data.teamMap) {
-        let cleanKey = key.trim().toLowerCase();
-        cleanMap[cleanKey] = data.teamMap[key];
-        cleanMap[cleanKey].nom = cleanMap[cleanKey].nom.trim();
-      }
-      
-      DB = data;
-      DB.teamMap = cleanMap;
-      DB.teamNames = Object.keys(DB.teamMap).map(k => DB.teamMap[k].nom);
-      
-      document.getElementById('dataLoader').style.display = 'none';
-      document.getElementById('mainUI').classList.remove('hidden');
+  function initAdmin(pin) {
+    google.script.run
+      .withSuccessHandler(data => {
+        let cleanMap = {};
+        for(let key in data.teamMap) {
+          let cleanKey = key.trim().toLowerCase();
+          cleanMap[cleanKey] = data.teamMap[key];
+          cleanMap[cleanKey].nom = cleanMap[cleanKey].nom.trim();
+        }
+        
+        DB = data;
+        DB.teamMap = cleanMap;
+        DB.teamNames = Object.keys(DB.teamMap).map(k => DB.teamMap[k].nom);
+        
+        DB.staffMap = data.staffMap || {};
+        DB.staffNames = Object.keys(DB.staffMap).map(k => DB.staffMap[k].nom);
+        
+        DB.staffShift1Header = data.staffShift1Header || "18h00 - 20h30";
+        DB.staffShift2Header = data.staffShift2Header || "20h30 - 23h00";
+        DB.globalMep = data.globalMep || "17h30";
+        DB.globalRangement = data.globalRangement || "23h00";
+        DB.globalAfter = data.globalAfter || "23h30";
+        
+        document.getElementById('dataLoader').style.display = 'none';
+        document.getElementById('mainUI').classList.remove('hidden');
 
-      const courts = DB.matchData[0].slice(1);
-      const sel = document.getElementById('courtSelect');
-      sel.innerHTML = '<option value="">-- Choisir un terrain --</option>'; // Réinitialise si relog
-      courts.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
-    }).getInitialAdminData();
+        const courts = DB.matchData[0].slice(1);
+        const sel = document.getElementById('courtSelect');
+        sel.innerHTML = '<option value="">-- Choisir un terrain --</option>'; 
+        courts.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
 
-    // Rafraîchit l'affichage des matchs toutes les 60 secondes
+        if (data.afterMessage) {
+          document.getElementById('adminAlert').style.display = 'block';
+          document.getElementById('adminAlertContent').innerText = data.afterMessage;
+        }
+
+        renderTimeline(data.adminTimeline);
+
+        const publicUrl = data.appUrl; 
+        document.getElementById('qrCodeImg').src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(publicUrl);
+        document.getElementById('publicLinkBtn').href = publicUrl;
+      })
+      .withFailureHandler(error => {
+        alert(error.message);
+        logoutStaff();
+      })
+      .getInitialAdminData(pin);
+
     setInterval(renderMatches, 60000);
   }
 
-  /** 3. LOGIQUE DES TERRAINS ET MATCHS EN COURS **/
   function getMatchInfo(cellText) {
     const lines = cellText.split('\n');
     if (lines.length < 2) return null;
@@ -242,7 +312,6 @@
   }
 
   function isMatchLive(timeStr, nextTimeStr) {
-    // MODIFICATION : Ajout de la vérification isTournamentDay() ici
     if (!timeStr || !isTournamentDay()) return false;
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -264,15 +333,12 @@
   function renderMatches() {
     const court = document.getElementById('courtSelect').value;
     const res = document.getElementById('courtResults');
-    
-    if(!court) {
-      res.innerHTML = '<div class="info-msg">Veuillez sélectionner un terrain pour voir les matchs.</div>';
-      return;
-    }
+    if(!court) { res.innerHTML = '<div class="info-msg">Veuillez sélectionner un terrain pour voir les matchs.</div>'; return; }
 
     res.innerHTML = "";
     const colIdx = DB.matchData[0].indexOf(court);
     let matchFound = false;
+    let matchCounter = 1;
 
     for(let i=1; i < DB.matchData.length; i++) {
       const cell = DB.matchData[i][colIdx];
@@ -281,18 +347,17 @@
 
       const info = getMatchInfo(cell);
       const idLines = cell.split('\n')[0].split(/ vs /i);
-
       const currentTimeStr = DB.matchData[i][0];
       const nextTimeStr = (i + 1 < DB.matchData.length) ? DB.matchData[i+1][0] : null;
       
       const isLive = isMatchLive(currentTimeStr, nextTimeStr);
       const liveClass = isLive ? "live-match" : "";
-      const liveBadgeHtml = isLive ? `<div class="live-badge">🔴 EN DIRECT</div>` : "";
+      const headerText = isLive ? `<span style="color:var(--accent)">🔴 EN DIRECT (${currentTimeStr})</span>` : `⏰ ${currentTimeStr}`;
 
       res.innerHTML += `
         <div class="card ${liveClass}" onclick="showTeamDetails('${info.t1.nom.replace(/'/g,"\\'")}', '${info.t2.nom.replace(/'/g,"\\'")}')" style="cursor:pointer">
-          ${liveBadgeHtml}
-          <div class="arena-header">⏰ ${currentTimeStr}</div>
+        <div class="match-number">#${matchCounter}</div>
+          <div class="arena-header">${headerText}</div>
           <div class="arena-row">
             <div class="team-block">
               <div class="t-id">${idLines[0] || ""}</div>
@@ -311,50 +376,71 @@
             </div>
           </div>
         </div>`;
+        matchCounter++;
     }
-
     if(!matchFound) res.innerHTML = '<div class="info-msg">Aucun match programmé sur ce terrain.</div>';
   }
 
-  /** 4. RECHERCHE ET AFFICHAGE DES ÉQUIPES **/
+  // --- RECHERCHE ETUDIANTS (ÉQUIPES) ---
+  const teamSearchInput = document.getElementById('teamSearch');
+  const teamListDiv = document.getElementById('teamList');
   
-  // Masquer la liste si on clique ailleurs sur la page
-  document.addEventListener('click', function(e) {
-    const searchInput = document.getElementById('teamSearch');
-    const listDiv = document.getElementById('teamList');
-    if (e.target !== searchInput && e.target !== listDiv && !listDiv.contains(e.target)) {
-      listDiv.style.display = 'none';
-    }
-  });
+  teamSearchInput.addEventListener('input', function() {
+    const val = this.value.trim().toLowerCase();
+    teamListDiv.innerHTML = '';
+    const filtered = DB.teamNames.filter(t => t.toLowerCase().includes(val));
 
-  function handleSearch(val) {
-    const listDiv = document.getElementById('teamList');
-    listDiv.innerHTML = '';
-    
-    const lowerVal = val.trim().toLowerCase();
-    
-    // On ne bloque plus la recherche en dessous de 2 caractères :
-    // Si la case est vide ou en cours de frappe, on filtre
-    const filtered = DB.teamNames.filter(t => t.toLowerCase().includes(lowerVal));
-
-    if(filtered.length > 0) {
-      listDiv.style.display = 'block';
+    if(filtered.length > 0 && val !== "") {
+      teamListDiv.style.display = 'block';
       filtered.forEach(t => {
         const item = document.createElement('div');
         item.className = 'team-item';
         item.innerText = t;
         item.onclick = (e) => { 
-          e.stopPropagation(); // Empêche le document click de se déclencher
-          document.getElementById('teamSearch').value = t; 
-          listDiv.style.display = 'none'; 
+          e.stopPropagation();
+          teamSearchInput.value = t; 
+          teamListDiv.style.display = 'none'; 
           showSingleTeam(t); 
         };
-        listDiv.appendChild(item);
+        teamListDiv.appendChild(item);
       });
     } else {
-      listDiv.style.display = 'none';
+      teamListDiv.style.display = 'none';
     }
-  }
+  });
+
+  // --- RECHERCHE STAFF (BÉNÉVOLES) ---
+  const staffSearchInput = document.getElementById('staffSearch');
+  const staffListDiv = document.getElementById('staffList');
+
+  staffSearchInput.addEventListener('input', function() {
+    const val = this.value.trim().toLowerCase();
+    staffListDiv.innerHTML = '';
+    const filtered = DB.staffNames.filter(s => s.toLowerCase().includes(val));
+
+    if(filtered.length > 0 && val !== "") {
+      staffListDiv.style.display = 'block';
+      filtered.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'team-item';
+        item.innerText = s;
+        item.onclick = (e) => { 
+          e.stopPropagation();
+          staffSearchInput.value = s; 
+          staffListDiv.style.display = 'none'; 
+          showSingleStaff(s); 
+        };
+        staffListDiv.appendChild(item);
+      });
+    } else {
+      staffListDiv.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (e.target !== teamSearchInput && !teamListDiv.contains(e.target)) teamListDiv.style.display = 'none';
+    if (e.target !== staffSearchInput && !staffListDiv.contains(e.target)) staffListDiv.style.display = 'none';
+  });
 
   function showSingleTeam(teamName) {
     const res = document.getElementById('teamResults');
@@ -362,18 +448,181 @@
     res.innerHTML = t ? renderTeamCard(t) : "<div class='info-msg'>Équipe introuvable.</div>";
   }
 
+  function showSingleStaff(staffName) {
+    const res = document.getElementById('staffResults');
+    const s = DB.staffMap[staffName.trim().toLowerCase()];
+    res.innerHTML = s ? renderStaffCard(s) : "<div class='info-msg'>Bénévole introuvable.</div>";
+  }
+
   function showTeamDetails(n1, n2) {
     switchTab('teams');
     const res = document.getElementById('teamResults');
     document.getElementById('teamSearch').value = "";
     document.getElementById('teamList').style.display = 'none';
-    
-    res.innerHTML = renderTeamCard(DB.teamMap[n1.trim().toLowerCase()]) + renderTeamCard(DB.teamMap[n2.trim().toLowerCase()]);
+    res.innerHTML = renderTeamCard(DB.teamMap[n1.trim().toLowerCase()]) + (n2 ? renderTeamCard(DB.teamMap[n2.trim().toLowerCase()]) : "");
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goToTeam(teamName) {
+    document.getElementById('teamSearch').value = teamName;
+    showSingleTeam(teamName);
+    switchTab('teams');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /** Fonction de Redirection rapide vers un Terrain **/
+  function goToCourt(posteFixe) {
+    if (!posteFixe) return;
+    const sel = document.getElementById('courtSelect');
+    for(let i=0; i < sel.options.length; i++) {
+        if(sel.options[i].value.toLowerCase().includes(posteFixe.toLowerCase())) {
+            sel.selectedIndex = i;
+            switchTab('courts');
+            renderMatches();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+    }
+    switchTab('courts');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function getTeamLiveOrNext(teamName) {
+    let isToday = isTournamentDay();
+    if (!isToday) return { isLive: false, isNext: false };
+
+    const headers = DB.matchData[0];
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    let nextMatch = null;
+
+    for(let i=1; i < DB.matchData.length; i++) {
+      for(let j=1; j < DB.matchData[i].length; j++) {
+        const cell = DB.matchData[i][j];
+        if(cell.toLowerCase().includes(teamName.toLowerCase())) {
+          const timeStr = DB.matchData[i][0];
+          const nextTimeStr = (i + 1 < DB.matchData.length) ? DB.matchData[i+1][0] : null;
+          
+          const isLive = isMatchLive(timeStr, nextTimeStr);
+          const match = parseMatchCell(cell);
+          
+          const timeMatch = timeStr.match(/(\d{1,2})[h:](\d{2})/i);
+          const startMin = timeMatch ? parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]) : 0;
+
+          if (isLive) {
+              return { isLive: true, matchName: `${match.nameA} vs ${match.nameB}`, venue: headers[j], time: timeStr };
+          }
+          
+          if (!isLive && startMin > currentMinutes && (!nextMatch || startMin < nextMatch.start)) {
+              nextMatch = { isNext: true, diff: startMin - currentMinutes, matchName: `${match.nameA} vs ${match.nameB}`, venue: headers[j], time: timeStr, start: startMin };
+          }
+        }
+      }
+    }
+    return nextMatch || { isLive: false, isNext: false };
+  }
+
+  function renderTeamSchedule(teamName) {
+    const headers = DB.matchData[0];
+    let matchesHtml = "";
+    let hasMatches = false;
+    let nextMatch = null;
+    let matchEnCours = null;
+    
+    const isToday = isTournamentDay();
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    let prevEndTimeStr = null;
+    let prevEndMins = 0;
+
+    for(let i=1; i < DB.matchData.length; i++) {
+      for(let j=1; j < DB.matchData[i].length; j++) {
+        const cell = DB.matchData[i][j];
+        if(cell.toLowerCase().includes(teamName.toLowerCase())) {
+          hasMatches = true;
+          const timeStr = DB.matchData[i][0];
+          const nextTimeStr = (i + 1 < DB.matchData.length) ? DB.matchData[i+1][0] : null;
+          
+          const isLive = isMatchLive(timeStr, nextTimeStr);
+          const match = parseMatchCell(cell);
+          
+          const timeParts = timeStr.toString().split('-');
+          const startStr = timeParts[0].trim();
+          const endStr = timeParts.length > 1 ? timeParts[1].trim() : startStr;
+
+          const timeMatch = startStr.match(/(\d{1,2})[h:](\d{2})/i);
+          const startMin = timeMatch ? parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]) : 0;
+
+          if (isToday) {
+            if (isLive) matchEnCours = { time: timeStr, venue: headers[j] };
+            if (!isLive && startMin > currentMinutes && (!nextMatch || startMin < nextMatch.start)) {
+              nextMatch = { start: startMin, time: timeStr, diff: startMin - currentMinutes, venue: headers[j] };
+            }
+          }
+
+          if (prevEndTimeStr && (startMin - prevEndMins > 25)) {
+            matchesHtml += `<div class="pause-banner" style="margin-bottom:8px; padding:10px; font-size:13px;">🌭 <b>GRANDE PAUSE (${prevEndTimeStr} - ${startStr})</b></div>`;
+          }
+
+          let badgeHtml = `<span style="color:#546e7a;">⏰ ${timeStr}</span>`;
+          let borderStyle = "border-left:4px solid #cfd8dc; background:#f8f9fa;";
+
+          if (isLive) {
+             badgeHtml = `<span style="color:var(--accent); font-weight:bold;">🔴 EN DIRECT (${timeStr})</span>`;
+             borderStyle = "border-left:4px solid var(--accent); background:#fffcfc;";
+          }
+
+          matchesHtml += `
+            <div style="border:1px solid #eee; border-radius:8px; padding:10px; margin-bottom:8px; ${borderStyle}">
+              <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                ${badgeHtml}
+                <span style="color:#888;">📍 ${headers[j]}</span>
+              </div>
+              <div style="font-size:13px; text-align:center; color:var(--header-bg); font-weight:600;">
+                ${match.nameA} <span style="color:#ccc; font-size:11px; font-weight:normal;">VS</span> ${match.nameB}
+              </div>
+            </div>`;
+
+          const endMatch = endStr.match(/(\d{1,2})[h:](\d{2})/i);
+          prevEndMins = endMatch ? parseInt(endMatch[1]) * 60 + parseInt(endMatch[2]) : startMin + 12;
+          prevEndTimeStr = endStr;
+        }
+      }
+    }
+    
+    let summaryHtml = "";
+    if (isToday) {
+      if (matchEnCours) {
+        summaryHtml = `
+          <div style="background:#fff1f0; border:1px solid #fce8e6; border-left:4px solid var(--accent); border-radius:8px; padding:10px; margin-bottom:15px; text-align:center;">
+            <div style="font-size: 14px; margin-bottom: 4px; color: #202124;"><b>Match en cours</b> (📍 ${matchEnCours.venue})</div>
+            ${nextMatch ? `<div style="font-size: 12px; color: #666;"><i>Prochain à ${nextMatch.time}</i></div>` : ''}
+          </div>`;
+      } else if (nextMatch) {
+        summaryHtml = `
+          <div style="background:#e8f0fe; border:1px solid #1a73e8; border-radius:8px; padding:10px; margin-bottom:15px; text-align:center; color:#1a73e8;">
+            ⏳ Prochain match dans <b>${nextMatch.diff} min</b><br><small style="color:#546e7a;">(${nextMatch.time} - 📍 ${nextMatch.venue})</small>
+          </div>`;
+      } else if (hasMatches) {
+        summaryHtml = `
+          <div style="background:#e6f4ea; border:1px solid #137333; color:#137333; border-radius:8px; padding:10px; margin-bottom:15px; text-align:center;">
+            🏁 <b>Terminé !</b>
+          </div>`;
+      }
+    } else if (hasMatches) {
+        summaryHtml = `<div style="background:#f1f3f4; color:#5f6368; border-radius:8px; padding:10px; margin-bottom:15px; text-align:center; font-size:13px;">📅 Planning complet.</div>`;
+    }
+    
+    if(!hasMatches) return '<p style="font-size:13px; color:#888; font-style:italic; margin-top:10px;">Aucun match trouvé.</p>';
+    return `<div style="margin-top:15px;">${summaryHtml}${matchesHtml}</div>`;
   }
 
   function renderTeamCard(t) {
     if(!t) return "";
+    const scheduleHtml = renderTeamSchedule(t.nom);
+
     return `
       <div class="card" style="border-left: 6px solid var(--header-bg);">
         <h3 style="margin-top:0; color:var(--header-bg); font-size:22px;">${t.nom}</h3>
@@ -389,14 +638,165 @@
           <b style="font-size:12px; color:#999; text-transform:uppercase;">Effectif complet :</b>
           <p style="font-size:13px; color:#555; line-height:1.5; margin-bottom:0;">${t.participants.join(', ')}</p>
         </div>
+        
+        <details open style="margin-top:15px; padding-top:15px; border-top:1px solid #eee;">
+          <summary style="font-size:14px; font-weight:bold; color:var(--primary); cursor:pointer; outline:none; user-select:none;">
+            📅 Afficher le planning de l'équipe
+          </summary>
+          ${scheduleHtml}
+        </details>
       </div>`;
   }
 
+  /** Carte Bénévole : Prise en charge des variables Dynamiques **/
+  function renderStaffCard(staff) {
+    const now = new Date();
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+    const isToday = isTournamentDay();
+
+    let currentRole = "";
+    let nextRole = "";
+
+    // Calcul Dynamique des heures de basculement selon l'Excel
+    let shift2StartMin = 1230; 
+    const matchS2 = DB.staffShift2Header.match(/(\d{1,2})[h:](\d{2})/i);
+    if(matchS2) shift2StartMin = parseInt(matchS2[1]) * 60 + parseInt(matchS2[2]);
+
+    let rangementStartMin = 1380; 
+    const matchR = DB.globalRangement.match(/(\d{1,2})[h:](\d{2})/i);
+    if(matchR) rangementStartMin = parseInt(matchR[1]) * 60 + parseInt(matchR[2]);
+
+    if (isToday) {
+       if (currentMins < 1080) { 
+          currentRole = "⏳ En attente du début";
+          nextRole = "À 18h00 : " + staff.shift1;
+       } else if (currentMins >= 1080 && currentMins < shift2StartMin) {
+          currentRole = staff.shift1;
+          nextRole = "Prochainement : " + staff.shift2;
+       } else if (currentMins >= shift2StartMin && currentMins < rangementStartMin) { 
+          currentRole = staff.shift2;
+          nextRole = "Prochainement : 🧹 Rangement général";
+       } else { 
+          currentRole = "🧹 Rangement général";
+          nextRole = "C'est la fin ! Merci 🎉";
+       }
+    } else {
+       currentRole = "📅 Tournoi non commencé";
+       nextRole = "Premier Shift : " + staff.shift1;
+    }
+
+    let teamToSearch = "";
+    if (staff.shift1.includes("SMUF1") || staff.shift2.includes("SMUF1")) teamToSearch = "SMUF1";
+    else if (staff.shift1.includes("SMUF 1") || staff.shift2.includes("SMUF 1")) teamToSearch = "SMUF1";
+    if (staff.shift1.includes("SMUF2") || staff.shift2.includes("SMUF2")) teamToSearch = "SMUF2";
+    else if (staff.shift1.includes("SMUF 2") || staff.shift2.includes("SMUF 2")) teamToSearch = "SMUF2";
+
+    let currentBoxExtra = "";
+    let currentBoxClick = "";
+    let currentBoxCursor = "";
+    
+    let nextBoxExtra = "";
+    let nextBoxClick = "";
+    let nextBoxCursor = "";
+
+    // GESTION JOUEUR
+    if (teamToSearch) {
+        let matchStatus = getTeamLiveOrNext(teamToSearch);
+        let statusHtml = "";
+        
+        if (matchStatus.isLive) {
+            statusHtml = `<div style="margin-top:8px; font-size:13px; color:#555; background:#fff; padding:8px; border-radius:6px; border:1px solid #eee;"><b>Match en cours :</b> ${matchStatus.matchName}<br>📍 ${matchStatus.venue} (${matchStatus.time})</div>`;
+        } else if (matchStatus.isNext) {
+            statusHtml = `<div style="margin-top:8px; font-size:13px; color:#555; background:#fff; padding:8px; border-radius:6px; border:1px solid #eee;">⏳ <b>Prochain match dans ${matchStatus.diff} min :</b><br>${matchStatus.matchName}<br>📍 ${matchStatus.venue} (${matchStatus.time})</div>`;
+        } else {
+            statusHtml = `<div style="margin-top:8px; font-size:13px; color:#555; background:#fff; padding:8px; border-radius:6px; border:1px solid #eee;">🏁 Pas de match immédiat.</div>`;
+        }
+
+        const clickAction = `onclick="goToTeam('${teamToSearch}')"`;
+        const cursorAction = `cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.05);`;
+        const clickHint = `<div style="margin-top:6px; font-size:11px; color:var(--primary); text-align:right;">👉 Cliquez pour voir tout le planning</div>`;
+
+        if (currentRole.includes("Joueur")) {
+            currentBoxExtra = statusHtml + clickHint;
+            currentBoxClick = clickAction;
+            currentBoxCursor = cursorAction;
+        } else if (nextRole.includes("Joueur")) {
+            nextBoxExtra = statusHtml + clickHint;
+            nextBoxClick = clickAction;
+            nextBoxCursor = cursorAction;
+        }
+    }
+
+    // GESTION ARBITRE
+    let isCurrentArb = currentRole.toLowerCase().includes("arbitrage") || currentRole.toLowerCase().includes("arbitre");
+    let isNextArb = nextRole.toLowerCase().includes("arbitrage") || nextRole.toLowerCase().includes("arbitre");
+
+    if (isCurrentArb && !currentBoxClick) {
+        currentBoxExtra = `<div style="margin-top:6px; font-size:11px; color:var(--primary); text-align:right;">👉 Cliquez pour voir les matchs du terrain</div>`;
+        currentBoxClick = `onclick="goToCourt('${staff.posteFixe.replace(/'/g,"\\'")}')"`;
+        currentBoxCursor = `cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.05);`;
+    }
+    if (isNextArb && !nextBoxClick) {
+        nextBoxExtra = `<div style="margin-top:6px; font-size:11px; color:var(--primary); text-align:right;">👉 Cliquez pour voir les matchs du terrain</div>`;
+        nextBoxClick = `onclick="goToCourt('${staff.posteFixe.replace(/'/g,"\\'")}')"`;
+        nextBoxCursor = `cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.05);`;
+    }
+
+    return `
+      <div class="card" style="border-left: 6px solid #f39c12;">
+        <h3 style="margin-top:0; color:var(--header-bg); font-size:22px;">👤 ${staff.nom} <span style="font-size:14px; color:#888;">(${staff.groupe || 'Staff'})</span></h3>
+        
+        <div style="background:#fffcfc; border:1px solid #fce8e6; border-left:4px solid var(--accent); border-radius:8px; padding:12px; margin-top:15px; ${currentBoxCursor}" ${currentBoxClick}>
+          <div style="font-size:11px; color:#e74c3c; font-weight:bold; text-transform:uppercase; margin-bottom:4px;">🔴 Actuellement</div>
+          <div style="font-size:15px; font-weight:bold; color:var(--text);">${currentRole}</div>
+          ${currentBoxExtra}
+        </div>
+
+        <div style="background:#f8f9fa; border:1px solid #eee; border-radius:8px; padding:12px; margin-top:10px; ${nextBoxCursor}" ${nextBoxClick}>
+          <div style="font-size:11px; color:#5f6368; font-weight:bold; text-transform:uppercase; margin-bottom:4px;">⏳ Prochainement</div>
+          <div style="font-size:14px; color:var(--text);">${nextRole}</div>
+          ${nextBoxExtra}
+        </div>
+
+        <div style="margin-top:20px; padding-top:15px; border-top:1px solid #eee;">
+          <b style="font-size:12px; color:#999; text-transform:uppercase;">Planning Complet de la soirée :</b>
+          <ul style="font-size:13px; color:#555; padding-left:20px; margin-top:5px; line-height:1.6;">
+            <li><b>Mise en place :</b> ${DB.globalMep}</li>
+            <li><b>${DB.staffShift1Header} :</b> ${staff.shift1 || "-"}</li>
+            <li><b>${DB.staffShift2Header} :</b> ${staff.shift2 || "-"}</li>
+            <li><b>Rangement :</b> ${DB.globalRangement}</li>
+            <li><b>After :</b> ${DB.globalAfter}</li>
+          </ul>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTimeline(timeline) {
+    let html = '';
+    if (!timeline || timeline.length === 0) {
+      html = '<p style="color:#888; font-style:italic;">Aucun planning défini.</p>';
+    } else {
+      timeline.forEach(item => {
+        html += `<p style="margin-bottom:12px; font-size:14px;">
+                   <b>${item.time}</b> - ${item.label}<br>
+                   <span style="font-size:12px; color:#555;">${item.details || ''}</span>
+                 </p>`;
+      });
+    }
+    document.getElementById('adminTimelineContent').innerHTML = html;
+  }
+
   function switchTab(t) {
-    document.getElementById('sectionTeams').classList.toggle('hidden', t!=='teams');
-    document.getElementById('sectionCourts').classList.toggle('hidden', t!=='courts');
-    document.getElementById('tabTeams').classList.toggle('active', t==='teams');
-    document.getElementById('tabCourts').classList.toggle('active', t==='courts');
+    document.getElementById('sectionTeams').classList.toggle('hidden', t !== 'teams');
+    document.getElementById('sectionStaff').classList.toggle('hidden', t !== 'staff');
+    document.getElementById('sectionCourts').classList.toggle('hidden', t !== 'courts');
+    document.getElementById('sectionInfos').classList.toggle('hidden', t !== 'infos');
+
+    document.getElementById('tabTeams').classList.toggle('active', t === 'teams');
+    document.getElementById('tabStaff').classList.toggle('active', t === 'staff');
+    document.getElementById('tabCourts').classList.toggle('active', t === 'courts');
+    document.getElementById('tabInfos').classList.toggle('active', t === 'infos');
   }
 </script>
 </body>
