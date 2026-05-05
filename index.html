@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
   <style>
+    /* =========================================
+       CSS VARIABLES & GLOBAL LAYOUT
+       ========================================= */
     :root { --primary: #1a73e8; --bg: #f8f9fa; --text: #202124; --accent: #d93025; --shadow: 0 2px 8px rgba(0,0,0,0.1); }
     body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); padding: 15px; margin: 0; padding-bottom: 50px; }
     .app-container { max-width: 500px; margin: auto; }
@@ -10,50 +13,59 @@
     .header { text-align: center; margin-bottom: 20px; }
     .header h2 { margin: 0; color: var(--primary); font-size: 26px; }
     
-    /* Alerte Live */
+    /* =========================================
+       ALERTS & BANNERS
+       ========================================= */
+    /* Live Administrator Alert */
     .after-alert { background: #fff3e0; border: 2px dashed #ff9800; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; display: none; animation: pulseAlert 2s infinite; }
     @keyframes pulseAlert { 0% {box-shadow: 0 0 0 0 rgba(255,152,0,0.4);} 70% {box-shadow: 0 0 0 10px rgba(255,152,0,0);} 100% {box-shadow: 0 0 0 0 rgba(255,152,0,0);} }
 
-    /* Bannière Grande Pause (Dynamique par équipe) */
+    /* Long Break Dynamic Banner */
     .pause-banner { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); line-height: 1.4; }
     .pause-banner b { font-size: 16px; }
 
-    /* Recherche */
+    /* =========================================
+       SEARCH BARS & DROPDOWN LISTS
+       ========================================= */
     .dropdown-container { position: relative; margin-bottom: 20px; }
     input#teamSearch { width: 100%; padding: 16px; border: 2px solid #dadce0; border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; background: white; }
     .team-list { position: absolute; width: 100%; max-height: 250px; overflow-y: auto; background: white; border: 1px solid #dadce0; border-radius: 0 0 12px 12px; z-index: 100; display: none; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
     .team-item { padding: 14px; cursor: pointer; border-bottom: 1px solid #f1f3f4; }
     .team-item:hover { background-color: #f1f3f4; }
 
-    /* Info Global Tournoi */
+    /* Global Info Message (Waiting for event, etc) */
     .next-match-info { padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-size: 15px; line-height: 1.4; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-    /* Cartes Match */
+    /* =========================================
+       MATCH CARDS
+       ========================================= */
     .card { background: white; border-radius: 16px; padding: 18px; margin-bottom: 15px; box-shadow: var(--shadow); border-left: 6px solid var(--primary); }
     .time-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; }
     .time { color: var(--primary); font-size: 15px; }
     .venue { color: #5f6368; font-size: 14px; }
 
-    /* Design "Battle" ⚔️ */
+    /* Arena Match Details Container */
     .match-display { text-align: center; padding: 12px; background: #fdfdfd; border-radius: 12px; border: 1px solid #f1f1f1; }
     .team-id-label { font-size: 10px; color: #9aa0a6; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
     .team-name-label { font-size: 16px; font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; }
     .swords-icon { font-size: 20px; padding: 0 10px; color: #dadce0; }
 
-    /* Match en direct */
+    /* Live Match State Override */
     .card.live-match { border-left: 6px solid var(--accent); background: #fffcfc; }
     .live-time { color: var(--accent); font-weight: bold; }
     .live-dot { height: 10px; width: 10px; background-color: var(--accent); border-radius: 50%; display: inline-block; margin-right: 6px; animation: blink 1.5s infinite; }
     @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
 
-    /* Boîte de statut (Résumé équipe) */
+    /* Team Summary Status Box */
     .status-box { background: #e8f0fe; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; border: 1px solid #1a73e8; }
     .status-live { background: #fff1f0; border: 1px solid #fce8e6; border-left: 4px solid var(--accent); }
     
     button.main-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; margin-bottom: 10px; cursor: pointer; font-weight: bold; font-size: 15px; background:#606770; color:white; }
     .hidden { display: none !important; }
 
-    /* Animation de chargement */
+    /* =========================================
+       LOADING SPINNERS
+       ========================================= */
     .loader-container { text-align: center; padding: 40px 20px; }
     .spinner { border: 4px solid #dadce0; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -62,30 +74,39 @@
 </head>
 <body>
 
+<!-- =========================================
+     MAIN APPLICATION CONTAINER
+     ========================================= -->
 <div class="app-container">
   <div class="header"><h2>🏆 Polysport 2026</h2></div>
 
+  <!-- Global Staff Alert Message -->
   <div id="afterAlert" class="after-alert">
     <div style="font-weight: bold; color: #e65100; margin-bottom: 5px;">📣 INFOS LIVE</div>
     <div id="afterContent"></div>
   </div>
 
+  <!-- Loading State Indicator -->
   <div id="loadingIndicator" class="loader-container">
     <div class="spinner"></div>
     <div class="loader-text">Chargement des équipes et des matchs...</div>
   </div>
 
+  <!-- Team Search Module -->
   <div class="dropdown-container hidden" id="searchContainer">
     <input type="text" id="teamSearch" placeholder="🔍 Chercher votre équipe..." autocomplete="off">
     <div id="teamList" class="team-list"></div>
   </div>
 
+  <!-- Dynamic Global Informational Banner -->
   <div id="nextMatchInfo" class="next-match-info hidden"></div>
 
+  <!-- Wrapper for searched team results / matches -->
   <div id="results"></div>
 
   <hr style="border: 0; border-top: 1px solid #dadce0; margin: 25px 0;">
 
+  <!-- Expandable Global Information Sections -->
   <button class="main-btn" onclick="toggleSection('generalContainer', this, '📅 Programme de la journée')">📅 Programme de la journée</button>
   <div id="generalContainer" class="card hidden"><div id="timelineContent"></div></div>
 
@@ -95,14 +116,24 @@
   </div>
 </div>
 
+<!-- =========================================
+     JAVASCRIPT LOGIC
+     ========================================= -->
 <script>
+  // Global variable to hold incoming public schedule and metadata
   let APP_DATA = { matchData: [], teams: [], timeline: [], tournamentDate: "" };
 
+  /**
+   * window.onload
+   * Connects to backend on boot to retrieve full data cache.
+   * Modifies UI state upon successful payload fetch.
+   */
   window.onload = function() {
     google.script.run.withSuccessHandler(data => {
       APP_DATA = data;
       document.getElementById('loadingIndicator').style.display = 'none';
       document.getElementById('searchContainer').classList.remove('hidden');
+      
       if(data.afterMessage) {
         document.getElementById('afterAlert').style.display = 'block';
         document.getElementById('afterContent').innerText = data.afterMessage;
@@ -113,7 +144,11 @@
     }).getInitialAppData();
   };
 
-  /** Vérifie si on est bien le jour du tournoi **/
+  /**
+   * isTournamentDay
+   * Safely checks if the user's current day matches the active tournament date.
+   * @returns {boolean} True if the event is happening today.
+   */
   function isTournamentDay() {
     if (!APP_DATA.tournamentDate) return false;
     const now = new Date();
@@ -125,6 +160,11 @@
            now.getDate() === tournament.getDate();
   }
 
+  /**
+   * parseMatchCell
+   * Identifies components of a match string (IDs, Name A, Name B).
+   * Used for visual rendering in the cards.
+   */
   function parseMatchCell(cellText) {
     try {
       const lines = cellText.split('\n');
@@ -140,23 +180,30 @@
     } catch(e) { return { idA: "", idB: "", nameA: cellText, nameB: "" }; }
   }
 
+  // =========================================
+  // SEARCH & AUTOCOMPLETE EVENTS
+  // =========================================
   const searchInput = document.getElementById('teamSearch');
   const listDiv = document.getElementById('teamList');
 
+  // Open dropdown on focus
   searchInput.addEventListener('focus', function() {
     renderTeamList(APP_DATA.teams.filter(t => t.toLowerCase().includes(this.value.toLowerCase())));
   });
 
+  // Filter dropdown on type
   searchInput.addEventListener('input', function() {
     const val = this.value.toLowerCase();
     renderTeamList(APP_DATA.teams.filter(t => t.toLowerCase().includes(val)));
     if(val === "") { document.getElementById('results').innerHTML = ''; checkGlobalStart(); }
   });
 
+  // Close dropdown if clicking elsewhere
   document.addEventListener('click', function(e) {
     if (!document.querySelector('.dropdown-container').contains(e.target)) listDiv.style.display = 'none';
   });
 
+  /** Renders autocomplete elements for search */
   function renderTeamList(teams) {
     listDiv.innerHTML = '';
     listDiv.style.display = teams.length ? 'block' : 'none';
@@ -169,11 +216,16 @@
     });
   }
 
+  // Soft refresh to keep timings correct automatically every minute
   setInterval(() => {
     const s = document.getElementById('teamSearch').value;
     if(s && APP_DATA.teams.includes(s)) filterMatches(s);
   }, 60000);
 
+  /**
+   * isMatchLive
+   * Time calculation utility specific to Public view constraints (20 mins per slot assumption).
+   */
   function isMatchLive(timeStr, nextTimeStr) {
     if (!timeStr || !isTournamentDay()) return false; 
     const now = new Date();
@@ -189,6 +241,12 @@
     return (currentMinutes >= startMin && currentMinutes < endMin);
   }
 
+  /**
+   * filterMatches
+   * Extremely important function: Iterates over schedule DB to extract a team's agenda.
+   * Resolves visual states, checks for >25min breaks, and creates the overall summary box.
+   * @param {string} teamName - The selected team to display.
+   */
   function filterMatches(teamName) {
     document.getElementById('nextMatchInfo').classList.add('hidden');
     const results = document.getElementById('results');
@@ -203,7 +261,7 @@
 
     const isToday = isTournamentDay();
 
-    // Variables pour détecter la pause dynamiquement
+    // Variables pour détecter la pause dynamiquement / Break tracking variables
     let prevEndTimeStr = null;
     let prevEndMins = 0;
 
@@ -226,6 +284,7 @@
           const timeMatch = startStr.match(/(\d{1,2})[h:](\d{2})/i);
           const startMin = timeMatch ? parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]) : 0;
 
+          // Track Live or Upcoming State
           if (isToday) {
             if (isLive) matchEnCours = { time: timeStr, venue: headers[j] };
             if (!isLive && startMin > currentMinutes && (!nextMatch || startMin < nextMatch.start)) {
@@ -234,6 +293,7 @@
           }
 
           // NOUVEAU : Si l'écart de repos est > à 25 min, on ajoute la bannière !
+          // Break Banner logic Injection
           if (prevEndTimeStr && (startMin - prevEndMins > 25)) {
             matchesHtml += `<div class="pause-banner">🌭 <b>GRANDE PAUSE (${prevEndTimeStr} - ${startStr})</b><br>Rendez-vous à la buvette ! 🍻</div>`;
           }
@@ -269,6 +329,7 @@
       }
     }
 
+    // Compose final Summary Box depending on calculated times
     let summaryHtml = "";
     if (isToday) {
       if (matchEnCours) {
@@ -288,6 +349,10 @@
     results.innerHTML = summaryHtml + matchesHtml;
   }
 
+  /**
+   * checkGlobalStart
+   * Fallback UI element indicating if the tournament has not yet started or is already finished.
+   */
   function checkGlobalStart() {
     const infoDiv = document.getElementById('nextMatchInfo');
     const now = new Date();
@@ -310,6 +375,10 @@
     infoDiv.classList.remove('hidden');
   }
 
+  /**
+   * renderTimeline
+   * Simply generates HTML string to display the tournament general agenda.
+   */
   function renderTimeline(timeline) {
     let html = '<h3 style="margin:0 0 15px 0; color:var(--primary);">Planning Général</h3>';
     timeline.forEach(item => {
@@ -318,6 +387,13 @@
     document.getElementById('timelineContent').innerHTML = html;
   }
 
+  /**
+   * toggleSection
+   * Lightweight accordion helper to hide/show extra info at the bottom (Schedule/Map).
+   * @param {string} id - Div target.
+   * @param {HTMLElement} btn - Activating button instance.
+   * @param {string} originalText - State restoration text.
+   */
   function toggleSection(id, btn, originalText) {
     const el = document.getElementById(id);
     const isHidden = el.classList.toggle('hidden');
