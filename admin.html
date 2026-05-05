@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
   <style>
+    /* =========================================
+       CSS VARIABLES & GLOBAL STYLES
+       ========================================= */
     :root { 
       --primary: #2ecc71; --bg: #eceff1; --header-bg: #263238; --text: #37474f; 
       --card: #ffffff; --accent: #e74c3c; --shadow: 0 6px 15px rgba(0,0,0,0.08);
@@ -10,6 +14,9 @@
     body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); padding: 0; margin: 0; }
     .app-container { max-width: 500px; margin: auto; padding: 15px; padding-bottom: 40px; }
     
+    /* =========================================
+       HEADER & BUTTONS
+       ========================================= */
     .header { background: var(--header-bg); color: white; text-align: center; padding: 18px; border-radius: 0 0 20px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; }
     .logout-btn { position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 22px; cursor: pointer; transition: transform 0.2s; }
     .logout-btn:hover { transform: scale(1.1); }
@@ -23,16 +30,25 @@
     .contact-btn:active:not(:disabled) { transform: translateY(0); }
     .contact-btn:disabled { background: #95a5a6; cursor: not-allowed; }
 
+    /* =========================================
+       LOGIN OVERLAY
+       ========================================= */
     #loginOverlay { position: fixed; inset: 0; background: var(--header-bg); z-index: 1000; display: flex; align-items: center; justify-content: center; }
     .login-box { background: white; padding: 35px 30px; border-radius: 20px; text-align: center; width: 80%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .error-msg { color: #e74c3c; font-size: 14px; font-weight: bold; margin-top: 15px; display: none; background: #fdf0ed; padding: 10px; border-radius: 8px; border: 1px solid #fadbd8; }
     
+    /* =========================================
+       LOADERS & SPINNERS
+       ========================================= */
     .loader-container { text-align: center; padding: 50px 20px; }
     .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
     .btn-spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; margin: 0 auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .loader-text { color: #5f6368; font-weight: bold; margin-top: 15px; }
 
+    /* =========================================
+       ALERTS & BANNERS
+       ========================================= */
     .after-alert { background: #fff3e0; border: 2px dashed #ff9800; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: center; display: none; position: relative; animation: pulseAlert 2s infinite; }
     .close-alert { position: absolute; top: 5px; right: 10px; cursor: pointer; color: #ff9800; font-size: 20px; font-weight: bold; }
     @keyframes pulseAlert { 0% {box-shadow: 0 0 0 0 rgba(255,152,0,0.4);} 70% {box-shadow: 0 0 0 10px rgba(255,152,0,0);} 100% {box-shadow: 0 0 0 0 rgba(255,152,0,0);} }
@@ -40,10 +56,16 @@
     .pause-banner { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); line-height: 1.4; animation: popIn 0.5s ease-out; }
     @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
+    /* =========================================
+       TABS NAVIGATION
+       ========================================= */
     .tabs { display: flex; margin: 20px 0; background: #cfd8dc; padding: 6px; border-radius: 14px; gap:4px; }
     .tab { flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; border-radius: 10px; font-weight: bold; color: #546e7a; font-size: 13px; transition: background 0.3s; }
     .tab.active { background: white; color: var(--header-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
+    /* =========================================
+       CARDS & MATCH UI
+       ========================================= */
     .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); position: relative; transition: transform 0.2s; }
     .card:active { transform: scale(0.98); }
     .arena-header { color: var(--header-bg); font-weight: 800; font-size: 18px; margin-bottom: 12px; text-align: center; }
@@ -63,7 +85,10 @@
     .g-f { background: var(--girl-color); }
     .g-h { background: var(--boy-color); }
 
-    input, select { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; margin-bottom: 10px; box-sizing: border-box; font-size: 15px; outline: none; transition: border 0.3s; }
+    /* =========================================
+       INPUTS & DROPDOWNS
+       ========================================= */
+    input, select { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; outline: none; transition: border 0.3s; }
     input:focus, select:focus { border-color: var(--primary); }
     
     .dropdown-container { position: relative; margin-bottom: 20px; }
@@ -79,6 +104,9 @@
 </head>
 <body>
 
+<!-- =========================================
+     LOGIN OVERLAY (Staff PIN Authentication)
+     ========================================= -->
 <div id="loginOverlay">
   <div class="login-box">
     <div style="font-size:45px; margin-bottom:10px;">🔐</div>
@@ -89,12 +117,16 @@
   </div>
 </div>
 
+<!-- =========================================
+     MAIN APP CONTAINER (Hidden until login)
+     ========================================= -->
 <div id="adminContent" class="app-container hidden">
   <div class="header">
     <h2 style="margin:0;">🛠️ STAFF DASHBOARD</h2>
     <button class="logout-btn" onclick="logoutStaff()" title="Se déconnecter">🚪</button>
   </div>
 
+  <!-- Loading State Display -->
   <div id="dataLoader" class="loader-container">
     <div class="spinner"></div>
     <div class="loader-text">Récupération du système...</div>
@@ -102,13 +134,14 @@
 
   <div id="mainUI" class="hidden">
     
+    <!-- Live Alerts Banner -->
     <div id="adminAlert" class="after-alert">
       <span class="close-alert" onclick="document.getElementById('adminAlert').style.display='none'">×</span>
       <div style="font-weight: bold; color: #e65100; margin-bottom: 5px;">📣 INFOS LIVE</div>
       <div id="adminAlertContent"></div>
     </div>
 
-    <!-- ONGLETS -->
+    <!-- NAVIGATION TABS -->
     <div class="tabs">
       <div class="tab active" id="tabCourts" onclick="switchTab('courts')">📍 Terrains</div>
       <div class="tab" id="tabTeams" onclick="switchTab('teams')">👥 Équipes</div>
@@ -116,6 +149,7 @@
       <div class="tab" id="tabInfos" onclick="switchTab('infos')">ℹ️ Infos</div>
     </div>
 
+    <!-- TAB 1: COURTS (Matches by arena) -->
     <div id="sectionCourts">
       <select id="courtSelect" onchange="renderMatches()">
         <option value="">-- Choisir un terrain --</option>
@@ -125,6 +159,7 @@
       </div>
     </div>
 
+    <!-- TAB 2: TEAMS (Search and team details) -->
     <div id="sectionTeams" class="hidden">
       <div class="dropdown-container">
         <input type="text" id="teamSearch" placeholder="🔍 Chercher une équipe..." autocomplete="off">
@@ -135,6 +170,7 @@
       </div>
     </div>
 
+    <!-- TAB 3: STAFF (Search volunteers and roles) -->
     <div id="sectionStaff" class="hidden">
       <div class="dropdown-container">
         <input type="text" id="staffSearch" placeholder="🔍 Chercher un bénévole..." autocomplete="off">
@@ -149,6 +185,7 @@
       </div>
     </div>
 
+    <!-- TAB 4: INFOS (General schedule, map, public link) -->
     <div id="sectionInfos" class="hidden">
       <div class="card" style="border-left: 6px solid #f1c40f;">
         <h3 style="margin-top:0; color:var(--header-bg);">📅 Programme Staff</h3>
@@ -172,9 +209,18 @@
   </div>
 </div>
 
+<!-- =========================================
+     JAVASCRIPT LOGIC
+     ========================================= -->
 <script>
+  // Global Database Object to hold data fetched from Google Apps Script
   let DB = { teamMap: {}, matchData: [], teamNames: [], staffMap: {}, staffNames: [], tournamentDate: "", staffShift1Header: "", staffShift2Header: "", globalMep: "", globalRangement: "", globalAfter: "" };
 
+  /**
+   * window.onload
+   * Checks session storage for existing authentication.
+   * Bypasses login screen if a valid session exists.
+   */
   window.onload = function() {
     const savedPin = sessionStorage.getItem('polysport_staff_pin');
     if (savedPin) {
@@ -184,6 +230,11 @@
     }
   };
 
+  /**
+   * isTournamentDay
+   * Validates if the current date matches the set tournament date.
+   * @returns {boolean} True if today is the tournament day.
+   */
   function isTournamentDay() {
     if (!DB.tournamentDate) return false;
     const now = new Date();
@@ -195,6 +246,12 @@
            now.getDate() === tournament.getDate();
   }
 
+  /**
+   * parseMatchCell
+   * Extracts team IDs and names from a raw spreadsheet cell string.
+   * @param {string} cellText - The raw text from the spreadsheet cell.
+   * @returns {object} Parsed IDs and Names for both teams.
+   */
   function parseMatchCell(cellText) {
     try {
       const lines = cellText.split('\n');
@@ -205,6 +262,11 @@
     } catch(e) { return { idA: "", idB: "", nameA: cellText, nameB: "" }; }
   }
 
+  /**
+   * checkPin
+   * Triggers the backend Google Apps Script validation for the entered PIN.
+   * Handles UI states (loading spinner, errors, successful login).
+   */
   function checkPin() {
     const btn = document.getElementById('btnUnlock');
     const err = document.getElementById('loginError');
@@ -232,6 +294,10 @@
     }).verifyStaffPin(pin);
   }
 
+  /**
+   * logoutStaff
+   * Clears session storage and resets UI to the login overlay.
+   */
   function logoutStaff() {
     sessionStorage.removeItem('polysport_staff_pin');
     document.getElementById('adminContent').classList.add('hidden');
@@ -246,9 +312,16 @@
     switchTab('courts');
   }
 
+  /**
+   * initAdmin
+   * Fetches the complete admin dataset from the Google Apps Script backend.
+   * Populates UI dropdowns, generates the QR code, and triggers data renders.
+   * @param {string} pin - The authenticated staff PIN.
+   */
   function initAdmin(pin) {
     google.script.run
       .withSuccessHandler(data => {
+        // Clean team map keys to ensure case-insensitive searches
         let cleanMap = {};
         for(let key in data.teamMap) {
           let cleanKey = key.trim().toLowerCase();
@@ -263,20 +336,24 @@
         DB.staffMap = data.staffMap || {};
         DB.staffNames = Object.keys(DB.staffMap).map(k => DB.staffMap[k].nom);
         
+        // Setup temporal global variables
         DB.staffShift1Header = data.staffShift1Header || "18h00 - 20h30";
         DB.staffShift2Header = data.staffShift2Header || "20h30 - 23h00";
         DB.globalMep = data.globalMep || "17h30";
         DB.globalRangement = data.globalRangement || "23h00";
         DB.globalAfter = data.globalAfter || "23h30";
         
+        // Hide loader and show main UI
         document.getElementById('dataLoader').style.display = 'none';
         document.getElementById('mainUI').classList.remove('hidden');
 
+        // Populate Courts Dropdown
         const courts = DB.matchData[0].slice(1);
         const sel = document.getElementById('courtSelect');
         sel.innerHTML = '<option value="">-- Choisir un terrain --</option>'; 
         courts.forEach(c => { if(c) sel.innerHTML += `<option value="${c}">${c}</option>`; });
 
+        // Show live alert if provided
         if (data.afterMessage) {
           document.getElementById('adminAlert').style.display = 'block';
           document.getElementById('adminAlertContent').innerText = data.afterMessage;
@@ -284,6 +361,7 @@
 
         renderTimeline(data.adminTimeline);
 
+        // Generate dynamic QR Code pointing to the public Web App URL
         const publicUrl = data.appUrl; 
         document.getElementById('qrCodeImg').src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(publicUrl);
         document.getElementById('publicLinkBtn').href = publicUrl;
@@ -294,9 +372,15 @@
       })
       .getInitialAdminData(pin);
 
+    // Refresh matches view every 60 seconds
     setInterval(renderMatches, 60000);
   }
 
+  /**
+   * getMatchInfo
+   * Looks up team statistics and captain data from the mapped DB for a specific match text.
+   * @param {string} cellText - The raw spreadsheet text containing team names.
+   */
   function getMatchInfo(cellText) {
     const lines = cellText.split('\n');
     if (lines.length < 2) return null;
@@ -311,6 +395,11 @@
     };
   }
 
+  /**
+   * isMatchLive
+   * Determines if a match is currently active based on system time vs match schedule.
+   * Assumes 30 minutes match slots unless bounded by the next match's start time.
+   */
   function isMatchLive(timeStr, nextTimeStr) {
     if (!timeStr || !isTournamentDay()) return false;
     const now = new Date();
@@ -330,15 +419,20 @@
     return (currentMinutes >= startMin && currentMinutes < endMin);
   }
 
+  /**
+   * renderMatches
+   * Renders the list of scheduled matches for a specific court chosen in the dropdown.
+   * Dynamically highlights live matches.
+   */
   function renderMatches() {
     const court = document.getElementById('courtSelect').value;
     const res = document.getElementById('courtResults');
     if(!court) { res.innerHTML = '<div class="info-msg">Veuillez sélectionner un terrain pour voir les matchs.</div>'; return; }
 
-    res.innerHTML = "";
     const colIdx = DB.matchData[0].indexOf(court);
     let matchFound = false;
     let matchCounter = 1;
+    let htmlContent = "";
 
     for(let i=1; i < DB.matchData.length; i++) {
       const cell = DB.matchData[i][colIdx];
@@ -354,7 +448,7 @@
       const liveClass = isLive ? "live-match" : "";
       const headerText = isLive ? `<span style="color:var(--accent)">🔴 EN DIRECT (${currentTimeStr})</span>` : `⏰ ${currentTimeStr}`;
 
-      res.innerHTML += `
+      htmlContent += `
         <div class="card ${liveClass}" onclick="showTeamDetails('${info.t1.nom.replace(/'/g,"\\'")}', '${info.t2.nom.replace(/'/g,"\\'")}')" style="cursor:pointer">
         <div class="match-number">#${matchCounter}</div>
           <div class="arena-header">${headerText}</div>
@@ -378,10 +472,17 @@
         </div>`;
         matchCounter++;
     }
-    if(!matchFound) res.innerHTML = '<div class="info-msg">Aucun match programmé sur ce terrain.</div>';
+    
+    if(matchFound) {
+      res.innerHTML = htmlContent;
+    } else {
+      res.innerHTML = '<div class="info-msg">Aucun match programmé sur ce terrain.</div>';
+    }
   }
 
-  // --- RECHERCHE ETUDIANTS (ÉQUIPES) ---
+  // =========================================
+  // SEARCH EVENT LISTENERS (TEAMS & STAFF)
+  // =========================================
   const teamSearchInput = document.getElementById('teamSearch');
   const teamListDiv = document.getElementById('teamList');
   
@@ -409,7 +510,6 @@
     }
   });
 
-  // --- RECHERCHE STAFF (BÉNÉVOLES) ---
   const staffSearchInput = document.getElementById('staffSearch');
   const staffListDiv = document.getElementById('staffList');
 
@@ -437,23 +537,31 @@
     }
   });
 
+  // Hide dropdowns when clicking outside
   document.addEventListener('click', function(e) {
     if (e.target !== teamSearchInput && !teamListDiv.contains(e.target)) teamListDiv.style.display = 'none';
     if (e.target !== staffSearchInput && !staffListDiv.contains(e.target)) staffListDiv.style.display = 'none';
   });
 
+  // =========================================
+  // UI RENDERERS & NAVIGATION HELPERS
+  // =========================================
+
+  /** Displays card for a single searched team */
   function showSingleTeam(teamName) {
     const res = document.getElementById('teamResults');
     const t = DB.teamMap[teamName.trim().toLowerCase()];
     res.innerHTML = t ? renderTeamCard(t) : "<div class='info-msg'>Équipe introuvable.</div>";
   }
 
+  /** Displays card for a single searched staff member */
   function showSingleStaff(staffName) {
     const res = document.getElementById('staffResults');
     const s = DB.staffMap[staffName.trim().toLowerCase()];
     res.innerHTML = s ? renderStaffCard(s) : "<div class='info-msg'>Bénévole introuvable.</div>";
   }
 
+  /** Switches to the Teams tab and displays details for both teams in a selected match */
   function showTeamDetails(n1, n2) {
     switchTab('teams');
     const res = document.getElementById('teamResults');
@@ -463,6 +571,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /** Helper to force navigation to a team's view from external hooks */
   function goToTeam(teamName) {
     document.getElementById('teamSearch').value = teamName;
     showSingleTeam(teamName);
@@ -470,7 +579,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /** Fonction de Redirection rapide vers un Terrain **/
+  /** Redirection rapide vers un Terrain / Court redirection based on role */
   function goToCourt(posteFixe) {
     if (!posteFixe) return;
     const sel = document.getElementById('courtSelect');
@@ -487,6 +596,11 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /**
+   * getTeamLiveOrNext
+   * Finds out if a specific team is playing right now, or calculates time until their next match.
+   * Very useful for contextual info in Staff Cards.
+   */
   function getTeamLiveOrNext(teamName) {
     let isToday = isTournamentDay();
     if (!isToday) return { isLive: false, isNext: false };
@@ -523,6 +637,11 @@
     return nextMatch || { isLive: false, isNext: false };
   }
 
+  /**
+   * renderTeamSchedule
+   * Parses the global matrix to build an HTML schedule component for a specific team.
+   * Also injects pause banners if a long break is detected.
+   */
   function renderTeamSchedule(teamName) {
     const headers = DB.matchData[0];
     let matchesHtml = "";
@@ -562,6 +681,7 @@
             }
           }
 
+          // Gap calculation for dynamic pause banners (>25 min)
           if (prevEndTimeStr && (startMin - prevEndMins > 25)) {
             matchesHtml += `<div class="pause-banner" style="margin-bottom:8px; padding:10px; font-size:13px;">🌭 <b>GRANDE PAUSE (${prevEndTimeStr} - ${startStr})</b></div>`;
           }
@@ -592,6 +712,7 @@
       }
     }
     
+    // Status Summaries (Header blocks above schedule)
     let summaryHtml = "";
     if (isToday) {
       if (matchEnCours) {
@@ -619,6 +740,10 @@
     return `<div style="margin-top:15px;">${summaryHtml}${matchesHtml}</div>`;
   }
 
+  /**
+   * renderTeamCard
+   * Generates HTML displaying a team's details, contacts, roster, and their collapsible schedule.
+   */
   function renderTeamCard(t) {
     if(!t) return "";
     const scheduleHtml = renderTeamSchedule(t.nom);
@@ -648,7 +773,11 @@
       </div>`;
   }
 
-  /** Carte Bénévole : Prise en charge des variables Dynamiques **/
+  /**
+   * renderStaffCard
+   * Builds dynamic staff profiles depending on current time, shifts, and specific roles.
+   * Handles contextual click events for Referees to check courts, and players to check teams.
+   */
   function renderStaffCard(staff) {
     const now = new Date();
     const currentMins = now.getHours() * 60 + now.getMinutes();
@@ -657,7 +786,7 @@
     let currentRole = "";
     let nextRole = "";
 
-    // Calcul Dynamique des heures de basculement selon l'Excel
+    // Dynamic shift switch calculations
     let shift2StartMin = 1230; 
     const matchS2 = DB.staffShift2Header.match(/(\d{1,2})[h:](\d{2})/i);
     if(matchS2) shift2StartMin = parseInt(matchS2[1]) * 60 + parseInt(matchS2[2]);
@@ -685,6 +814,7 @@
        nextRole = "Premier Shift : " + staff.shift1;
     }
 
+    // Role-specific cross-referencing for players playing in SMUF teams
     let teamToSearch = "";
     if (staff.shift1.includes("SMUF1") || staff.shift2.includes("SMUF1")) teamToSearch = "SMUF1";
     else if (staff.shift1.includes("SMUF 1") || staff.shift2.includes("SMUF 1")) teamToSearch = "SMUF1";
@@ -699,7 +829,7 @@
     let nextBoxClick = "";
     let nextBoxCursor = "";
 
-    // GESTION JOUEUR
+    // GESTION JOUEUR (Player view handling)
     if (teamToSearch) {
         let matchStatus = getTeamLiveOrNext(teamToSearch);
         let statusHtml = "";
@@ -727,7 +857,7 @@
         }
     }
 
-    // GESTION ARBITRE
+    // GESTION ARBITRE (Referee view handling - link to Court)
     let isCurrentArb = currentRole.toLowerCase().includes("arbitrage") || currentRole.toLowerCase().includes("arbitre");
     let isNextArb = nextRole.toLowerCase().includes("arbitrage") || nextRole.toLowerCase().includes("arbitre");
 
@@ -772,6 +902,10 @@
     `;
   }
 
+  /**
+   * renderTimeline
+   * Populates the HTML block displaying the general schedule timeline in the Infos Tab.
+   */
   function renderTimeline(timeline) {
     let html = '';
     if (!timeline || timeline.length === 0) {
@@ -787,6 +921,10 @@
     document.getElementById('adminTimelineContent').innerHTML = html;
   }
 
+  /**
+   * switchTab
+   * Toggles visibility classes between different main sections of the app dashboard.
+   */
   function switchTab(t) {
     document.getElementById('sectionTeams').classList.toggle('hidden', t !== 'teams');
     document.getElementById('sectionStaff').classList.toggle('hidden', t !== 'staff');
