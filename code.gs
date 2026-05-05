@@ -1,12 +1,19 @@
 /**
  * ============================================================================
  * POLYSPORT 2026 - BACKEND SCRIPT
+ * System API logic to connect Google Sheets data with the frontend web apps.
  * ============================================================================
  */
 
 const ADMIN_TOKEN = "PolySportGames2026"; 
 const BACKEND_PIN = "2526";               
 
+/**
+ * FUNCTION: doGet
+ * Entry point for Google Apps Script Web Apps.
+ * Renders the Staff (Admin) page if correct token is provided in the URL parameters.
+ * Otherwise, falls back to rendering the public-facing 'index' app.
+ */
 function doGet(e) {
   if (e.parameter.page === 'admin' && e.parameter.token === ADMIN_TOKEN) {
     return HtmlService.createTemplateFromFile('admin')
@@ -21,6 +28,12 @@ function doGet(e) {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
+/**
+ * FUNCTION: verifyStaffPin
+ * Simple authenticator for the Staff Dashboard.
+ * @param {string} inputPin - PIN provided by the user in frontend.
+ * @returns {boolean} Validity of the PIN.
+ */
 function verifyStaffPin(inputPin) {
   return inputPin === BACKEND_PIN;
 }
@@ -29,6 +42,13 @@ function verifyStaffPin(inputPin) {
  * ============================================================================
  * API : APPLICATION PUBLIQUE
  * ============================================================================
+ */
+
+/**
+ * FUNCTION: getInitialAppData
+ * Gathers essential data for the public-facing user application.
+ * Collects general timeline, date, alert messages, teams list, and matches from sheets.
+ * @returns {Object} Clean payload of public data for the frontend.
  */
 function getInitialAppData() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -42,11 +62,13 @@ function getInitialAppData() {
   let timeline = [];
   let afterMessage = "";
 
+  // Iterate over general schedule to build timeline
   for (let i = 1; i < dataGen.length; i++) {
     const act = dataGen[i][0];
     if (!act) continue;
     if (act.toLowerCase().includes("date")) continue; 
     
+    // Extract live info/alert separately
     if (act.toLowerCase().includes("info") || act.toLowerCase().includes("live")) {
       afterMessage = dataGen[i][2];
       continue;
@@ -59,10 +81,12 @@ function getInitialAppData() {
     });
   }
 
+  // Fetch final matches grid
   const sheetMatches = ss.getSheetByName('AFFICHAGE_FINAL');
   const matchData = sheetMatches.getDataRange().getDisplayValues();
   const appUrl = ScriptApp.getService().getUrl();
 
+  // Fetch team names list
   const sheetTeams = ss.getSheetByName('REF_Equipes');
   const teams = sheetTeams.getRange("B2:B150").getValues().flat().filter(String).sort();
 
@@ -74,6 +98,15 @@ function getInitialAppData() {
  * API : APPLICATION STAFF (ADMIN)
  * ============================================================================
  */
+
+/**
+ * FUNCTION: getInitialAdminData
+ * Gathers comprehensive data required for the Staff Dashboard.
+ * Checks PIN security, then fetches teams info (including contacts/stats), 
+ * staff duties, schedules, and global timeline.
+ * @param {string} pin - Server-side revalidation of security PIN.
+ * @returns {Object} Massive structured payload of teams, staff, and matches.
+ */
 function getInitialAdminData(pin) {
   if (pin !== BACKEND_PIN) {
     throw new Error("Accès refusé : PIN invalide ou manquant.");
@@ -81,6 +114,7 @@ function getInitialAdminData(pin) {
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   
+  // Extract Tournament General info
   const sheetGen = ss.getSheetByName('PLANNING_GENERAL');
   const dataGen = sheetGen.getDataRange().getDisplayValues();
   
@@ -100,6 +134,7 @@ function getInitialAdminData(pin) {
     }
   }
 
+  // Fetch specific Teams metadata (Contacts, stats, roster)
   const sheetTeams = ss.getSheetByName('REF_Equipes');
   const teamData = sheetTeams.getDataRange().getValues();
   let teamMap = {};
@@ -117,11 +152,12 @@ function getInitialAdminData(pin) {
     };
   }
 
+  // Fetch match schedule grid
   const sheetMatches = ss.getSheetByName('AFFICHAGE_FINAL');
   const matchData = sheetMatches.getDataRange().getDisplayValues();
   const appUrl = ScriptApp.getService().getUrl();
 
-  // --- RÉCUPÉRATION DES BÉNÉVOLES ET VARIABLES GLOBALES ---
+  // --- STAFF & VOLUNTEER EXTRACTION ---
   let staffMap = {};
   let staffShift1Header = "18h00 - 20h30";
   let staffShift2Header = "20h30 - 23h00";
@@ -134,19 +170,20 @@ function getInitialAdminData(pin) {
   if (sheetStaff) {
     const staffData = sheetStaff.getDataRange().getDisplayValues();
     
-    // Extraction des En-têtes des Shifts (Ligne 1)
+    // Extract Shift Headers dynamically (Row 1)
     if(staffData.length > 0) {
        staffShift1Header = staffData[0][5] || staffShift1Header;
        staffShift2Header = staffData[0][6] || staffShift2Header;
     }
     
-    // Extraction des Horaires Globaux (Depuis la ligne 2, index 1)
+    // Extract Global Timings (Row 2, from specific columns)
     if(staffData.length > 1 && staffData[1]) {
        globalMep = staffData[1][7] ? formatToFrenchTime(staffData[1][7]) : globalMep;
        globalRangement = staffData[1][8] ? formatToFrenchTime(staffData[1][8]) : globalRangement;
        globalAfter = staffData[1][9] ? formatToFrenchTime(staffData[1][9]) : globalAfter;
     }
 
+    // Build map for each individual staff member
     for (let i = 1; i < staffData.length; i++) {
       const name = staffData[i][1]; 
       if (!name) continue;
@@ -162,7 +199,7 @@ function getInitialAdminData(pin) {
     }
   }
 
-  // --- CRÉATION DE LA TIMELINE SPÉCIFIQUE ADMIN (Basée sur REF_Benevoles) ---
+  // --- BUILD ADMIN TIMELINE (Based on dynamic parameters) ---
   let adminTimeline = [
       { time: globalMep, label: "Mise en place", details: "Préparation et accueil du staff" },
       { time: staffShift1Header, label: "Shift 1", details: "Première vague d'activités" },
@@ -176,8 +213,15 @@ function getInitialAdminData(pin) {
 
 /**
  * ============================================================================
- * UTILITAIRES
+ * UTILITAIRES / UTILITIES
  * ============================================================================
+ */
+
+/**
+ * FUNCTION: formatToFrenchTime
+ * Cleans up raw times into a standard "XXhXX" formatting for better UI presentation.
+ * @param {string} timeInput - Raw time string from sheet.
+ * @returns {string} Formatted french time.
  */
 function formatToFrenchTime(timeInput) {
   if (!timeInput) return "";
